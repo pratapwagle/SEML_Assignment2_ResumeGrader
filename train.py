@@ -1,3 +1,5 @@
+"""CLI entrypoint: train the classifier and write model + metrics artifacts."""
+
 from config import METRICS_PATH, MODEL_PATH
 from logging_config import configure_logging
 from ml.data import build_training_data

@@ -1,3 +1,9 @@
+"""Streamlit recruiter UI preserved from Assignment I.
+
+Uses the same ``ResumeScreeningApplication`` path as the REST API so scoring
+and audit behaviour cannot drift between interfaces.
+"""
+
 from __future__ import annotations
 
 import pandas as pd
@@ -16,11 +22,13 @@ configure_logging()
 
 @st.cache_resource
 def load_application() -> ResumeScreeningApplication:
+    """Build and cache the shared application service for the Streamlit process."""
     service = ResumeScoringService(ModelPredictor(MODEL_PATH))
     return ResumeScreeningApplication(service, AuditRepository(AUDIT_PATH))
 
 
 def main() -> None:
+    """Render upload/paste workflow, results, audit history, and metrics sidebar."""
     st.set_page_config(page_title="AI Resume Screening - Group 179", layout="wide")
     st.title("AI Resume Screening System")
     st.caption(

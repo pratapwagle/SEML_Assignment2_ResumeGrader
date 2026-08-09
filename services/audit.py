@@ -1,3 +1,5 @@
+"""Privacy-preserving audit history for screening decisions."""
+
 from __future__ import annotations
 
 import logging
@@ -20,7 +22,11 @@ AUDIT_COLUMNS = [
 
 
 class AuditRepository:
-    """Persist prediction metadata without storing sensitive resume text."""
+    """Persist prediction metadata without storing sensitive resume text.
+
+    Args:
+        storage_path: CSV path for append-only audit rows.
+    """
 
     def __init__(self, storage_path: Path):
         self.storage_path = storage_path
@@ -32,6 +38,14 @@ class AuditRepository:
         resume_text: str,
         result: dict[str, Any],
     ) -> None:
+        """Append one audit row using resume length instead of raw body.
+
+        Args:
+            candidate_name: Candidate display name.
+            source: Channel label (``api``, ``upload``, etc.).
+            resume_text: Used only to compute ``resume_characters``.
+            result: Scoring output with role, confidence, and explanation.
+        """
         record = {
             "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "candidate_name": candidate_name,
@@ -52,6 +66,11 @@ class AuditRepository:
         )
 
     def list_results(self) -> pd.DataFrame:
+        """Return the full audit history, or an empty frame with known columns.
+
+        Returns:
+            DataFrame of audit rows ordered as stored on disk.
+        """
         if self.storage_path.exists():
             return pd.read_csv(self.storage_path)
         return pd.DataFrame(columns=AUDIT_COLUMNS)

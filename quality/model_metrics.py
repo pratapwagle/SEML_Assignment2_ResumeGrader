@@ -1,3 +1,5 @@
+"""Model-quality metrics for multi-class resume role prediction."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -13,7 +15,17 @@ def compute_classification_metrics(
     probabilities: np.ndarray,
     classes: np.ndarray,
 ) -> dict[str, Any]:
-    """Measure classification, ranking, and confidence calibration quality."""
+    """Measure accuracy, weighted F1, multiclass Brier, and top-3 accuracy.
+
+    Args:
+        y_true: Ground-truth labels.
+        y_pred: Predicted labels.
+        probabilities: Class probability matrix aligned with ``classes``.
+        classes: Ordered class label array from the fitted estimator.
+
+    Returns:
+        Dict of float metrics used by training gates and the metrics snapshot.
+    """
     true_labels = np.asarray(y_true)
     predicted_labels = np.asarray(y_pred)
     encoded_true = label_binarize(true_labels, classes=classes)

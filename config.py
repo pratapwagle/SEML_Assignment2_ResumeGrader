@@ -1,3 +1,9 @@
+"""Project paths, model version, and role label constants.
+
+All runtime paths are relative to the repository root so API, Streamlit,
+training, and tests share one configuration.
+"""
+
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent

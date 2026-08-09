@@ -1,3 +1,9 @@
+"""FastAPI transport layer for resume screening inference.
+
+Routes are thin: they validate HTTP contracts, map errors to status codes, and
+delegate to ``ResumeScreeningApplication`` so behaviour matches Streamlit.
+"""
+
 from __future__ import annotations
 
 import logging
@@ -23,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    """Configure logging and eagerly load the model when the artifact exists."""
     configure_logging()
     if MODEL_PATH.exists():
         get_application()
@@ -43,6 +50,11 @@ _application: ResumeScreeningApplication | None = None
 
 
 def get_application() -> ResumeScreeningApplication:
+    """Return a process-wide application instance (lazy singleton).
+
+    Returns:
+        Wired ``ResumeScreeningApplication`` with predictor, scoring, and audit.
+    """
     global _application
     if _application is None:
         scoring_service = ResumeScoringService(ModelPredictor(MODEL_PATH))
@@ -60,6 +72,14 @@ def get_application() -> ResumeScreeningApplication:
     responses={503: {"description": "Model artifact is unavailable"}},
 )
 def health() -> HealthResponse:
+    """Readiness probe: model artifact present and API version.
+
+    Returns:
+        Health payload when the joblib file exists.
+
+    Raises:
+        HTTPException: 503 if the model artifact is missing.
+    """
     if not MODEL_PATH.exists():
         logger.error("Readiness check failed; model artifact is missing")
         raise HTTPException(
@@ -86,6 +106,20 @@ def health() -> HealthResponse:
 def predict(
     request: ResumeRequest,
 ) -> PredictionResponse:
+    """Score a resume and return ranked roles with explanation.
+
+    ``POST /predict`` and ``POST /v1/predictions`` share this handler.
+
+    Args:
+        request: Validated candidate name and resume text.
+
+    Returns:
+        Typed prediction response for the OpenAPI contract.
+
+    Raises:
+        HTTPException: 422 validation/domain errors, 503 missing model, 500
+            unexpected failures.
+    """
     try:
         result = get_application().submit(
             ResumeSubmission(
@@ -110,6 +144,14 @@ def predict(
 
 @app.get("/metrics", response_model=MetricsSnapshot)
 def metrics() -> MetricsSnapshot:
+    """Return the last training metrics snapshot from disk.
+
+    Returns:
+        Metrics snapshot used for release evidence and UI summaries.
+
+    Raises:
+        HTTPException: 404 if the snapshot file is missing.
+    """
     if not METRICS_PATH.exists():
         raise HTTPException(status_code=404, detail="Metrics snapshot is unavailable")
     return MetricsSnapshot.model_validate_json(METRICS_PATH.read_text(encoding="utf-8"))

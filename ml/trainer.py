@@ -1,3 +1,5 @@
+"""Offline training, release gates, and artifact persistence."""
+
 from __future__ import annotations
 
 import json
@@ -24,6 +26,12 @@ MIN_WEIGHTED_F1 = 0.80
 
 
 def build_pipeline() -> Pipeline:
+    """Construct the TF-IDF + logistic regression inference pipeline.
+
+    Returns:
+        Unfitted scikit-learn ``Pipeline`` with a fixed random seed on the
+        classifier for reproducible demos.
+    """
     return Pipeline(
         [
             ("tfidf", TfidfVectorizer(ngram_range=(1, 2), min_df=1)),
@@ -37,6 +45,24 @@ def train_model(
     model_path: Path,
     metrics_path: Path | None = None,
 ) -> dict[str, Any]:
+    """Train, gate, and persist the resume role classifier.
+
+    Validates the frame, evaluates on a stratified holdout, enforces minimum
+    accuracy and weighted F1, then refits on all rows and writes the joblib
+    artifact. Optionally writes a metrics JSON snapshot for the API/UI.
+
+    Args:
+        frame: Training data with ``resume_text`` and ``job_role`` columns.
+        model_path: Destination path for the joblib pipeline.
+        metrics_path: Optional path for ``metrics_snapshot.json``.
+
+    Returns:
+        Dict of evaluation metrics and embedded data-quality summary.
+
+    Raises:
+        TypeError, ValueError: From data validation or failed quality gates.
+        Exception: From model fit failures.
+    """
     data_quality = validate_training_data(frame)
     cleaned = frame["resume_text"].map(clean_text)
     labels = frame["job_role"]

@@ -1,3 +1,5 @@
+"""Data-quality measurement and simple text-length drift detection."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -7,7 +9,15 @@ import pandas as pd
 
 
 def compute_data_metrics(frame: pd.DataFrame) -> dict[str, Any]:
-    """Return measurable schema, completeness, balance, and length statistics."""
+    """Return schema, completeness, balance, and length statistics.
+
+    Args:
+        frame: Training or evaluation frame with ``resume_text`` and
+            ``job_role`` columns (caller validates schema first).
+
+    Returns:
+        Dict suitable for metrics snapshots and the API metrics schema.
+    """
     required = frame[["resume_text", "job_role"]]
     missing_or_empty = required.isna() | required.apply(
         lambda column: column.astype(str).str.strip().eq("")
@@ -30,7 +40,19 @@ def detect_text_length_drift(
     reference_std: float,
     current_lengths: list[int],
 ) -> dict[str, Any]:
-    """Flag a current batch whose mean text length is over three sigma away."""
+    """Flag a batch whose mean text length is more than three sigma away.
+
+    Args:
+        reference_mean: Baseline mean character length.
+        reference_std: Baseline standard deviation (0 disables z-score).
+        current_lengths: Character lengths for the current batch.
+
+    Returns:
+        Dict with z-score and ``drift_detected`` boolean.
+
+    Raises:
+        ValueError: If ``current_lengths`` is empty.
+    """
     if not current_lengths:
         raise ValueError("current_lengths must not be empty")
     current_mean = float(np.mean(current_lengths))

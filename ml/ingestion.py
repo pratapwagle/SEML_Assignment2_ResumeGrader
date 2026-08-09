@@ -1,3 +1,9 @@
+"""Resume file ingestion for TXT, PDF, and DOCX uploads.
+
+Extraction is isolated from scoring so the Streamlit UI can reject bad files
+before calling the shared application service.
+"""
+
 from __future__ import annotations
 
 import io
@@ -10,7 +16,19 @@ MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 
 
 def extract_resume_text(filename: str, payload: bytes) -> str:
-    """Extract text from an Assignment I-compatible resume upload."""
+    """Extract plain text from an uploaded resume file.
+
+    Args:
+        filename: Original upload name; suffix selects the parser.
+        payload: Raw file bytes (not base64).
+
+    Returns:
+        Non-empty extracted text with surrounding whitespace stripped.
+
+    Raises:
+        ValueError: Unsupported type, empty/oversized payload, or failed
+            extraction with no usable text.
+    """
     suffix = Path(filename).suffix.lower()
     if suffix not in SUPPORTED_SUFFIXES:
         logger.warning("Unsupported resume file type: %s", suffix or "<none>")

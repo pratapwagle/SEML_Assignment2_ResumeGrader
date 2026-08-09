@@ -1,3 +1,5 @@
+"""Model artifact loading and ranked multi-class inference."""
+
 from __future__ import annotations
 
 import logging
@@ -12,6 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 class ModelPredictor:
+    """Load a persisted scikit-learn pipeline and score resume text.
+
+    Args:
+        model_path: Filesystem path to a joblib pipeline artifact.
+
+    Raises:
+        FileNotFoundError: If ``model_path`` does not exist.
+    """
+
     def __init__(self, model_path: Path):
         if not model_path.exists():
             logger.error("Model artifact not found: %s", model_path)
@@ -20,6 +31,20 @@ class ModelPredictor:
         logger.info("Loaded model artifact from %s", model_path)
 
     def predict(self, resume_text: str) -> dict[str, Any]:
+        """Return top role, confidence, and full class ranking.
+
+        Args:
+            resume_text: Raw resume text (cleaned internally).
+
+        Returns:
+            Dict with ``predicted_role``, ``confidence`` in ``[0, 1]``, and
+            ``role_ranking`` as a list of ``{role, probability}`` sorted
+            descending. Probabilities sum to approximately 1.0.
+
+        Raises:
+            TypeError, ValueError: Propagated from ``clean_text``.
+            Exception: Propagated if the underlying pipeline fails.
+        """
         cleaned = clean_text(resume_text)
         try:
             probabilities = self.pipeline.predict_proba([cleaned])[0]

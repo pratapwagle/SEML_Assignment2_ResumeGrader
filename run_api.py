@@ -1,3 +1,5 @@
+"""CLI entrypoint: serve the FastAPI app with uvicorn on localhost:8000."""
+
 from logging_config import configure_logging
 
 configure_logging()

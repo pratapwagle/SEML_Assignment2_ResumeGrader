@@ -1,3 +1,5 @@
+"""Demonstration training dataset construction and schema validation."""
+
 from __future__ import annotations
 
 import logging
@@ -12,6 +14,16 @@ REQUIRED_COLUMNS = {"resume_text", "job_role"}
 
 @dataclass(frozen=True)
 class DataQualityReport:
+    """Immutable summary of training-frame quality checks.
+
+    Attributes:
+        row_count: Number of rows inspected.
+        missing_values: Count of nulls in required columns.
+        duplicate_rows: Count of fully duplicated rows.
+        schema_valid: Whether required columns are present.
+        class_count: Number of distinct ``job_role`` labels.
+    """
+
     row_count: int
     missing_values: int
     duplicate_rows: int
@@ -20,6 +32,13 @@ class DataQualityReport:
 
 
 def build_training_data() -> pd.DataFrame:
+    """Build the small labelled synthetic dataset used for the assignment.
+
+    Returns:
+        DataFrame with columns ``resume_text`` and ``job_role`` (six balanced
+        roles). Intended for reproducible software-engineering demos, not
+        production model performance claims.
+    """
     rows = [
         (
             "python machine learning pandas sklearn model training classification "
@@ -139,6 +158,19 @@ def build_training_data() -> pd.DataFrame:
 
 
 def validate_training_data(frame: pd.DataFrame) -> DataQualityReport:
+    """Validate schema, missing values, and minimum class coverage.
+
+    Args:
+        frame: Candidate training frame.
+
+    Returns:
+        Populated ``DataQualityReport`` when checks pass.
+
+    Raises:
+        TypeError: If ``frame`` is not a DataFrame.
+        ValueError: Missing columns, missing required values, or fewer than
+            two classes with at least two rows each.
+    """
     if not isinstance(frame, pd.DataFrame):
         logger.error("Training data must be a pandas DataFrame")
         raise TypeError("training data must be a pandas DataFrame")

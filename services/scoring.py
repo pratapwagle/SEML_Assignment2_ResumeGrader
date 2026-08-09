@@ -1,3 +1,5 @@
+"""Role scoring with keyword-based explanation and human-oversight note."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -16,10 +18,26 @@ KEYWORDS = {
 
 
 class ResumeScoringService:
+    """Combine model inference with lightweight keyword explanations.
+
+    Args:
+        predictor: Loaded ``ModelPredictor`` instance.
+    """
+
     def __init__(self, predictor: ModelPredictor):
         self.predictor = predictor
 
     def score(self, resume_text: str) -> dict[str, Any]:
+        """Predict role and attach explanation plus advisory decision note.
+
+        Args:
+            resume_text: Raw resume text.
+
+        Returns:
+            Prediction dict extended with ``explanation`` and ``decision_note``.
+            Explanations are heuristic keyword matches for recruiter review,
+            not full model interpretability.
+        """
         result = self.predictor.predict(resume_text)
         normalized = clean_text(resume_text)
         matches = [
