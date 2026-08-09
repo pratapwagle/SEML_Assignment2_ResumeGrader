@@ -23,7 +23,7 @@ htmlcov/
 .tox/
 .nox/
 
-# Runtime artefacts (regenerated locally)
+# Runtime artefacts (regenerated locally; do not ship)
 logs/
 data/
 *.log
@@ -35,9 +35,21 @@ data/
 .DS_Store
 Thumbs.db
 
-# Jupyter checkpoints
+# Jupyter
 .ipynb_checkpoints/
 
-# Local secrets (if any are added later)
+# Secrets
 .env.*
 !.env.example
+
+# Office lock / temp files
+~$*
+**/~$*
+*.tmp.docx
+report/~$*
+report/*_plain.docx
+report/_*.py
+
+# Scratch extract folders
+_fig_extract/
+**/_fig_extract/

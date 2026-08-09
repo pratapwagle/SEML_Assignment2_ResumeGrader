@@ -5,7 +5,7 @@ Single folder for the Taxila narrative deliverable and generated QA artifacts.
 | File | Purpose |
 |------|---------|
 | `179.docx` | Written assignment report (Word) |
-| `179.pdf` | Written assignment report (PDF) — export from DOCX when ready |
+| `179.pdf` | Written assignment report (PDF) - export from DOCX when ready |
 | `metrics_snapshot.json` | Training metrics for `GET /metrics` and UI sidebar (`config.METRICS_PATH`) |
 | `lint_before.txt` / `lint_after.txt` | Code formatting/lint baseline and pass evidence |
 | `pytest_report.txt` | Automated test run evidence |
