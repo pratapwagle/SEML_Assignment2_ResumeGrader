@@ -18,7 +18,7 @@ download as ZIP and run from this folder root.
 | Source + tests | this repository root | Modular Python packages |
 | Architecture | [`architecture.md`](architecture.md) | API spec, structure, diagrams |
 | Report (PDF/Word) | [`report/179.pdf`](report/179.pdf), [`report/179.docx`](report/179.docx) | Taxila written submission |
-| Notebook (required name) | [`179.ipynb`](179.ipynb) | Research vs production demo |
+| Notebook (required name) | [`notebooks/179.ipynb`](notebooks/179.ipynb) | Research vs production demo |
 | Executed notebook | [`notebooks/179_executed.ipynb`](notebooks/179_executed.ipynb) | Outputs preserved |
 | Report + QA evidence | [`report/`](report/) | DOCX/PDF, pytest, lint, metrics snapshot |
 
@@ -33,14 +33,13 @@ Use **this folder** (or a git archive of it) as the source ZIP.
 submission/
 ├── architecture.md # System architecture & API contract
 ├── README.md # This file
-├── 179.ipynb # Assignment-required notebook name
 ├── app/ # REST API (FastAPI)
 ├── ml/ # Data, ingestion, preprocess, train, infer
 ├── services/ # Domain orchestration, scoring, audit
 ├── quality/ # Model & data quality metrics
 ├── tests/ # pytest suite
 ├── models/ # Trained joblib artifact
-├── notebooks/ # Executed notebook evidence
+├── notebooks/ # 179.ipynb (canonical) and executed evidence
 └── report/ # 179.docx/pdf + lint/pytest/metrics evidence
 ```
 
@@ -59,7 +58,7 @@ Full module map, sequence diagrams, and OpenAPI-style contracts:
 | Layer | Role |
 |-------|------|
 | `ml/`, `services/`, `app/`, `quality/` | **Production system** - run, test, deploy |
-| `179.ipynb` | **Course notebook** - research prototype vs production `clean_text` |
+| `notebooks/179.ipynb` | **Course notebook** - research prototype vs production `clean_text` |
 | `notebooks/179_executed.ipynb` | Same notebook with saved execution outputs |
 
 You do not need Jupyter to run the application.
