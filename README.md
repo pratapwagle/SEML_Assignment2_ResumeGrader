@@ -136,12 +136,12 @@ Metrics are **not** a production-performance claim; the dataset is deliberately 
 
 ## Group
 
-| BITS ID | Name | Contribution (qualitative) |
-|---------|------|----------------------------|
-| 2025AB05113 | Prashant | ML implementation and API, architecture and code quality |
-| 2025AA05032 | Prathap Wagle | ML implementation and API, architecture and code quality |
-| 2024AC05999 | Prasanna R T | Test design, execution and review |
-| 2024AC05914 | Pranav Mehrotra | QA evidence and final review |
+| BITS ID | Name | Qualitative Task Description | Percentage |
+|---------|------|----------------------------|------------|
+| 2025AB05113 | Prashant | Implemented ML training & preprocessing pipelines, built FastAPI REST endpoints, authored automated Pytest suite, and drafted initial report sections. | 25% |
+| 2025AA05032 | Prathap Wagle | Designed system architecture, integrated Streamlit UI & application layer, authored main report, added code comments, and validated submission readiness. | 25% |
+| 2024AC05999 | Prasanna R T | Conducted test design review, performed functional validation of candidate scoring workflows, and verified edge-case handling. | 25% |
+| 2024AC05914 | Pranav Mehrotra | Reviewed quality assurance evidence, conducted code audit reviews, and validated final submission package integrity. | 25% |
 
 > Fill quantitative contribution percentages (sum to 100) in the notebook and report before final Taxila upload if still blank.
 
