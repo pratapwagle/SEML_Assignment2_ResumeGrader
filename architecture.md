@@ -1,10 +1,10 @@
 # Architecture Specification
 
-**System:** AI Resume Screening System  
-**Course:** AIMLCZG546 — Software Engineering for Machine Learning  
-**Assignment:** II  
-**Group:** 179  
-**API version:** `2.1.0`  
+**System:** AI Resume Screening System 
+**Course:** AIMLCZG546 - Software Engineering for Machine Learning 
+**Assignment:** II 
+**Group:** 179 
+**API version:** `2.1.0` 
 **Document type:** System architecture, API contract, and runtime behaviour
 
 ---
@@ -31,60 +31,60 @@ are pure Python modules.
 
 ```text
 submission/
-├── architecture.md          # This document
-├── README.md                # Setup, runbook, submission map
+├── architecture.md # This document
+├── README.md # Setup, runbook, submission map
 ├── .gitignore
 ├── requirements.txt
-├── pyproject.toml           # Black / isort / pytest config
+├── pyproject.toml # Black / isort / pytest config
 ├── .flake8
 │
-├── config.py                # Paths, model version, role labels
-├── logging_config.py        # Rotating file + console logging
-├── train.py                 # Offline training entrypoint
-├── run_api.py               # FastAPI / uvicorn entrypoint
-├── streamlit_app.py         # Recruiter UI (Assignment I continuity)
+├── config.py # Paths, model version, role labels
+├── logging_config.py # Rotating file + console logging
+├── train.py # Offline training entrypoint
+├── run_api.py # FastAPI / uvicorn entrypoint
+├── streamlit_app.py # Recruiter UI (Assignment I continuity)
 │
-├── app/                     # HTTP transport layer
-│   ├── api.py               # Routes, status codes, lifecycle
-│   └── schemas.py           # Request / response contracts (Pydantic)
+├── app/ # HTTP transport layer
+│ ├── api.py # Routes, status codes, lifecycle
+│ └── schemas.py # Request / response contracts (Pydantic)
 │
-├── ml/                      # ML lifecycle components
-│   ├── data.py              # Dataset build + schema validation
-│   ├── ingestion.py         # TXT / PDF / DOCX extraction
-│   ├── preprocessing.py     # Text normalization + input guards
-│   ├── trainer.py           # Train, quality gates, artifact persist
-│   └── predictor.py         # Load artifact + inference
+├── ml/ # ML lifecycle components
+│ ├── data.py # Dataset build + schema validation
+│ ├── ingestion.py # TXT / PDF / DOCX extraction
+│ ├── preprocessing.py # Text normalization + input guards
+│ ├── trainer.py # Train, quality gates, artifact persist
+│ └── predictor.py # Load artifact + inference
 │
-├── services/                # Application / domain services
-│   ├── application.py       # Orchestrate validate → score → audit
-│   ├── scoring.py           # Explanation + human-oversight note
-│   └── audit.py             # Privacy-preserving metadata store
+├── services/ # Application / domain services
+│ ├── application.py # Orchestrate validate → score → audit
+│ ├── scoring.py # Explanation + human-oversight note
+│ └── audit.py # Privacy-preserving metadata store
 │
-├── quality/                 # Measurable quality metrics
-│   ├── model_metrics.py     # Accuracy, F1, Brier, top-3
-│   └── data_metrics.py      # Schema, missingness, balance, drift
+├── quality/ # Measurable quality metrics
+│ ├── model_metrics.py # Accuracy, F1, Brier, top-3
+│ └── data_metrics.py # Schema, missingness, balance, drift
 │
-├── tests/                   # pytest suite (unit, ML, API, data)
-├── models/                  # Versioned model artifact (.joblib)
+├── tests/ # pytest suite (unit, ML, API, data)
+├── models/ # Versioned model artifact (.joblib)
 │
-├── 179.ipynb                # Required assignment notebook name
+├── 179.ipynb # Required assignment notebook name
 ├── notebooks/
-│   └── 179_executed.ipynb   # Notebook with verified outputs
+│ └── 179_executed.ipynb # Notebook with verified outputs
 │
-└── report/                  # Written deliverable + QA evidence (single folder)
-    ├── 179.docx / 179.pdf   # Taxila report
-    ├── metrics_snapshot.json
-    ├── lint_before.txt / lint_after.txt
-    ├── pytest_report.txt
-    └── …                    # other quality evidence texts
+└── report/ # Written deliverable + QA evidence (single folder)
+ ├── 179.docx / 179.pdf # Taxila report
+ ├── metrics_snapshot.json
+ ├── lint_before.txt / lint_after.txt
+ ├── pytest_report.txt
+ └── ... # other quality evidence texts
 ```
 
 ### Structure principles
 
-1. **One concern per package** — transport (`app`), ML (`ml`), domain (`services`), metrics (`quality`).
-2. **Shared application service** — API and Streamlit cannot diverge on scoring/audit rules.
-3. **Evidence and narrative colocated** — `report/` holds the Word/PDF report and lint/pytest/metrics artifacts.
-4. **Git-friendly** — no venv, caches, or local logs checked in (see `.gitignore`).
+1. **One concern per package** - transport (`app`), ML (`ml`), domain (`services`), metrics (`quality`).
+2. **Shared application service** - API and Streamlit cannot diverge on scoring/audit rules.
+3. **Evidence and narrative colocated** - `report/` holds the Word/PDF report and lint/pytest/metrics artifacts.
+4. **Git-friendly** - no venv, caches, or local logs checked in (see `.gitignore`).
 
 ---
 
@@ -94,18 +94,18 @@ submission/
 
 ```mermaid
 flowchart LR
-  Recruiter[Recruiter / Operator]
-  Client[API Client / curl / OpenAPI]
-  System[AI Resume Screening System<br/>Group 179]
-  Artifact[(Model Artifact<br/>joblib)]
-  AuditStore[(Audit CSV<br/>metadata only)]
-  Metrics[(Metrics Snapshot<br/>JSON)]
+ Recruiter[Recruiter / Operator]
+ Client[API Client / curl / OpenAPI]
+ System[AI Resume Screening System<br/>Group 179]
+ Artifact[(Model Artifact<br/>joblib)]
+ AuditStore[(Audit CSV<br/>metadata only)]
+ Metrics[(Metrics Snapshot<br/>JSON)]
 
-  Recruiter -->|upload / paste resume| System
-  Client -->|HTTP JSON| System
-  System --> Artifact
-  System --> AuditStore
-  System --> Metrics
+ Recruiter -->|upload / paste resume| System
+ Client -->|HTTP JSON| System
+ System --> Artifact
+ System --> AuditStore
+ System --> Metrics
 ```
 
 ### 3.2 Component diagram (aligned with code structure)
@@ -114,70 +114,70 @@ Evaluator-facing view of **packages, classes, and key functions** for Assignment
 Objective 1. Edges match runtime/import dependencies verified against the
 `submission/` codebase (solid = primary control/data flow; dotted = config/logging).
 
-Source: [`docs/component_diagram.mmd`](docs/component_diagram.mmd)  
-Rendered asset: [`docs/component_diagram.png`](docs/component_diagram.png)  
+Source: [`docs/component_diagram.mmd`](docs/component_diagram.mmd) 
+Rendered asset: [`docs/component_diagram.png`](docs/component_diagram.png) 
 (Embedded in the Word report under §2 Refactoring as Figure 1b.)
 
 ```mermaid
 flowchart TB
-  subgraph Clients["Clients / entrypoints"]
-    UI["streamlit_app.py<br/>Recruiter UI"]
-    API["app.api + app.schemas<br/>FastAPI REST"]
-    TRAIN_CLI["train.py<br/>offline entrypoint"]
-  end
+ subgraph Clients["Clients / entrypoints"]
+ UI["streamlit_app.py<br/>Recruiter UI"]
+ API["app.api + app.schemas<br/>FastAPI REST"]
+ TRAIN_CLI["train.py<br/>offline entrypoint"]
+ end
 
-  subgraph Domain["services/ — domain layer"]
-    APP["ResumeScreeningApplication<br/>+ ResumeSubmission"]
-    SCORE["ResumeScoringService"]
-    AUDIT["AuditRepository"]
-  end
+ subgraph Domain["services/ - domain layer"]
+ APP["ResumeScreeningApplication<br/>+ ResumeSubmission"]
+ SCORE["ResumeScoringService"]
+ AUDIT["AuditRepository"]
+ end
 
-  subgraph ML["ml/ — ML lifecycle"]
-    PRE["preprocessing.clean_text"]
-    PRED["ModelPredictor"]
-    ING["ingestion.extract_resume_text"]
-    DATA["data<br/>build_training_data<br/>validate_training_data<br/>DataQualityReport"]
-    TRAIN["trainer<br/>build_pipeline<br/>train_model"]
-  end
+ subgraph ML["ml/ - ML lifecycle"]
+ PRE["preprocessing.clean_text"]
+ PRED["ModelPredictor"]
+ ING["ingestion.extract_resume_text"]
+ DATA["data<br/>build_training_data<br/>validate_training_data<br/>DataQualityReport"]
+ TRAIN["trainer<br/>build_pipeline<br/>train_model"]
+ end
 
-  subgraph Quality["quality/"]
-    MQ["model_metrics<br/>compute_classification_metrics"]
-    DQ["data_metrics<br/>compute_data_metrics<br/>detect_text_length_drift"]
-  end
+ subgraph Quality["quality/"]
+ MQ["model_metrics<br/>compute_classification_metrics"]
+ DQ["data_metrics<br/>compute_data_metrics<br/>detect_text_length_drift"]
+ end
 
-  subgraph CrossCutting["Cross-cutting"]
-    CFG["config.py"]
-    LOG["logging_config.py"]
-  end
+ subgraph CrossCutting["Cross-cutting"]
+ CFG["config.py"]
+ LOG["logging_config.py"]
+ end
 
-  ART[("models/<br/>resume_classifier.joblib")]
-  MET[("report/<br/>metrics_snapshot.json")]
+ ART[("models/<br/>resume_classifier.joblib")]
+ MET[("report/<br/>metrics_snapshot.json")]
 
-  UI --> APP
-  API --> APP
-  UI --> ING
-  APP --> SCORE
-  APP --> AUDIT
-  SCORE --> PRED
-  SCORE --> PRE
-  PRED --> PRE
-  PRED --> ART
-  API --> MET
-  UI --> MET
-  TRAIN_CLI --> DATA
-  TRAIN_CLI --> TRAIN
-  TRAIN --> DATA
-  TRAIN --> PRE
-  TRAIN --> MQ
-  TRAIN --> DQ
-  TRAIN --> ART
-  TRAIN --> MET
-  UI -.-> CFG
-  API -.-> CFG
-  TRAIN_CLI -.-> CFG
-  UI -.-> LOG
-  API -.-> LOG
-  TRAIN_CLI -.-> LOG
+ UI --> APP
+ API --> APP
+ UI --> ING
+ APP --> SCORE
+ APP --> AUDIT
+ SCORE --> PRED
+ SCORE --> PRE
+ PRED --> PRE
+ PRED --> ART
+ API --> MET
+ UI --> MET
+ TRAIN_CLI --> DATA
+ TRAIN_CLI --> TRAIN
+ TRAIN --> DATA
+ TRAIN --> PRE
+ TRAIN --> MQ
+ TRAIN --> DQ
+ TRAIN --> ART
+ TRAIN --> MET
+ UI -.-> CFG
+ API -.-> CFG
+ TRAIN_CLI -.-> CFG
+ UI -.-> LOG
+ API -.-> LOG
+ TRAIN_CLI -.-> LOG
 ```
 
 | Component (class / module) | Responsibility |
@@ -200,54 +200,54 @@ flowchart TB
 
 ```mermaid
 flowchart BT
-  config[config.py]
-  logcfg[logging_config.py]
+ config[config.py]
+ logcfg[logging_config.py]
 
-  preprocessing[ml.preprocessing]
-  data[ml.data]
-  ingestion[ml.ingestion]
-  trainer[ml.trainer]
-  predictor[ml.predictor]
+ preprocessing[ml.preprocessing]
+ data[ml.data]
+ ingestion[ml.ingestion]
+ trainer[ml.trainer]
+ predictor[ml.predictor]
 
-  model_metrics[quality.model_metrics]
-  data_metrics[quality.data_metrics]
+ model_metrics[quality.model_metrics]
+ data_metrics[quality.data_metrics]
 
-  scoring[services.scoring]
-  audit[services.audit]
-  application[services.application]
+ scoring[services.scoring]
+ audit[services.audit]
+ application[services.application]
 
-  schemas[app.schemas]
-  api[app.api]
-  streamlit[streamlit_app.py]
-  train_entry[train.py]
+ schemas[app.schemas]
+ api[app.api]
+ streamlit[streamlit_app.py]
+ train_entry[train.py]
 
-  predictor --> preprocessing
-  trainer --> preprocessing
-  trainer --> data
-  trainer --> model_metrics
-  trainer --> data_metrics
-  scoring --> predictor
-  scoring --> preprocessing
-  application --> scoring
-  application --> audit
-  api --> application
-  api --> schemas
-  api --> predictor
-  api --> config
-  api --> logcfg
-  streamlit --> application
-  streamlit --> ingestion
-  streamlit --> config
-  train_entry --> trainer
-  train_entry --> data
-  train_entry --> config
+ predictor --> preprocessing
+ trainer --> preprocessing
+ trainer --> data
+ trainer --> model_metrics
+ trainer --> data_metrics
+ scoring --> predictor
+ scoring --> preprocessing
+ application --> scoring
+ application --> audit
+ api --> application
+ api --> schemas
+ api --> predictor
+ api --> config
+ api --> logcfg
+ streamlit --> application
+ streamlit --> ingestion
+ streamlit --> config
+ train_entry --> trainer
+ train_entry --> data
+ train_entry --> config
 ```
 
 ---
 
 ## 4. Component specifications
 
-### 4.1 `ml` — machine learning lifecycle
+### 4.1 `ml` - machine learning lifecycle
 
 | Module | Responsibility | Key contracts |
 |--------|----------------|---------------|
@@ -257,7 +257,7 @@ flowchart BT
 | `trainer.py` | Fit TF-IDF + LogisticRegression; gates; persist | Min accuracy/F1 ≥ 0.80 |
 | `predictor.py` | Load artifact; rank role probabilities | Returns role, confidence, full ranking |
 
-### 4.2 `services` — domain orchestration
+### 4.2 `services` - domain orchestration
 
 | Module | Responsibility |
 |--------|----------------|
@@ -265,14 +265,14 @@ flowchart BT
 | `audit.py` | Persist metadata only (never raw resume body) |
 | `application.py` | Single submission pipeline for API and UI |
 
-### 4.3 `app` — transport
+### 4.3 `app` - transport
 
 | Module | Responsibility |
 |--------|----------------|
 | `schemas.py` | Pydantic request/response models |
 | `api.py` | HTTP routes, status codes, lifespan model load |
 
-### 4.4 `quality` — measurable QA
+### 4.4 `quality` - measurable QA
 
 | Module | Metrics |
 |--------|---------|
@@ -283,9 +283,9 @@ flowchart BT
 
 ## 5. API definition
 
-**Base URL (local):** `http://127.0.0.1:8000`  
-**Interactive docs:** `GET /docs` (OpenAPI / Swagger UI)  
-**Framework:** FastAPI + Pydantic v2  
+**Base URL (local):** `http://127.0.0.1:8000` 
+**Interactive docs:** `GET /docs` (OpenAPI / Swagger UI) 
+**Framework:** FastAPI + Pydantic v2 
 **Content-Type:** `application/json`
 
 ### 5.1 Endpoint catalogue
@@ -296,19 +296,19 @@ flowchart BT
 | `POST` | `/predict` | Inference (compatibility alias) | `200` | `422`, `503`, `500` |
 | `POST` | `/v1/predictions` | Versioned inference | `200` | `422`, `503`, `500` |
 | `GET` | `/metrics` | Last training metrics snapshot | `200` | `404` snapshot missing |
-| `GET` | `/docs` | OpenAPI UI | `200` | — |
+| `GET` | `/docs` | OpenAPI UI | `200` | - |
 
 `/predict` and `/v1/predictions` share the same handler and application service.
 
 ### 5.2 `GET /health`
 
-**Response `200` — `HealthResponse`**
+**Response `200` - `HealthResponse`**
 
 ```json
 {
-  "status": "healthy",
-  "model_loaded": true,
-  "version": "2.1.0"
+ "status": "healthy",
+ "model_loaded": true,
+ "version": "2.1.0"
 }
 ```
 
@@ -316,27 +316,27 @@ flowchart BT
 
 ```json
 {
-  "detail": "Model artifact is unavailable"
+ "detail": "Model artifact is unavailable"
 }
 ```
 
 ### 5.3 `POST /v1/predictions` (and `POST /predict`)
 
-**Request — `ResumeRequest`**
+**Request - `ResumeRequest`**
 
 | Field | Type | Constraints |
 |-------|------|-------------|
-| `candidate_name` | string | 1–100 chars after strip; not blank |
-| `resume_text` | string | 20–20 000 chars; must yield usable text after normalization |
+| `candidate_name` | string | 1-100 chars after strip; not blank |
+| `resume_text` | string | 20-20 000 chars; must yield usable text after normalization |
 
 ```json
 {
-  "candidate_name": "Demo Candidate",
-  "resume_text": "Experienced QA engineer with selenium playwright automation testing and regression skills."
+ "candidate_name": "Demo Candidate",
+ "resume_text": "Experienced QA engineer with selenium playwright automation testing and regression skills."
 }
 ```
 
-**Response `200` — `PredictionResponse`**
+**Response `200` - `PredictionResponse`**
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -351,15 +351,15 @@ flowchart BT
 
 ```json
 {
-  "candidate_name": "Demo Candidate",
-  "predicted_role": "QA Engineer",
-  "confidence": 0.42,
-  "role_ranking": [
-    { "role": "QA Engineer", "probability": 0.42 },
-    { "role": "Backend Developer", "probability": 0.15 }
-  ],
-  "explanation": "Matched evidence: testing, selenium, playwright, automation",
-  "decision_note": "Advisory output only; no automatic rejection is performed."
+ "candidate_name": "Demo Candidate",
+ "predicted_role": "QA Engineer",
+ "confidence": 0.42,
+ "role_ranking": [
+ { "role": "QA Engineer", "probability": 0.42 },
+ { "role": "Backend Developer", "probability": 0.15 }
+ ],
+ "explanation": "Matched evidence: testing, selenium, playwright, automation",
+ "decision_note": "Advisory output only; no automatic rejection is performed."
 }
 ```
 
@@ -373,33 +373,33 @@ flowchart BT
 
 ### 5.4 `GET /metrics`
 
-**Response `200` — `MetricsSnapshot`**
+**Response `200` - `MetricsSnapshot`**
 
 ```json
 {
-  "generated_at_utc": "2026-08-01T09:09:38+00:00",
-  "model_path": "resume_classifier.joblib",
-  "model_quality": {
-    "accuracy": 1.0,
-    "weighted_f1": 1.0,
-    "multiclass_brier": 0.725,
-    "top_3_accuracy": 1.0,
-    "validation_rows": 12
-  },
-  "data_quality": {
-    "schema_valid": true,
-    "missing_value_rate": 0.0,
-    "duplicate_rows": 0,
-    "class_count": 6,
-    "minority_class_fraction": 0.167,
-    "text_length_mean": 76.96,
-    "text_length_std": 8.12
-  },
-  "quality_gates": {
-    "minimum_accuracy": 0.8,
-    "minimum_weighted_f1": 0.8,
-    "passed": true
-  }
+ "generated_at_utc": "2026-08-01T09:09:38+00:00",
+ "model_path": "resume_classifier.joblib",
+ "model_quality": {
+ "accuracy": 1.0,
+ "weighted_f1": 1.0,
+ "multiclass_brier": 0.725,
+ "top_3_accuracy": 1.0,
+ "validation_rows": 12
+ },
+ "data_quality": {
+ "schema_valid": true,
+ "missing_value_rate": 0.0,
+ "duplicate_rows": 0,
+ "class_count": 6,
+ "minority_class_fraction": 0.167,
+ "text_length_mean": 76.96,
+ "text_length_std": 8.12
+ },
+ "quality_gates": {
+ "minimum_accuracy": 0.8,
+ "minimum_weighted_f1": 0.8,
+ "passed": true
+ }
 }
 ```
 
@@ -413,8 +413,8 @@ curl http://127.0.0.1:8000/health
 curl http://127.0.0.1:8000/metrics
 
 curl -X POST http://127.0.0.1:8000/v1/predictions \
-  -H "Content-Type: application/json" \
-  -d "{\"candidate_name\":\"Demo\",\"resume_text\":\"Python machine learning statistics NLP and model evaluation experience.\"}"
+ -H "Content-Type: application/json" \
+ -d "{\"candidate_name\":\"Demo\",\"resume_text\":\"Python machine learning statistics NLP and model evaluation experience.\"}"
 ```
 
 ---
@@ -425,98 +425,98 @@ curl -X POST http://127.0.0.1:8000/v1/predictions \
 
 ```mermaid
 sequenceDiagram
-  actor Client
-  participant API as app.api
-  participant App as ResumeScreeningApplication
-  participant Score as ResumeScoringService
-  participant Pred as ModelPredictor
-  participant Prep as clean_text
-  participant Audit as AuditRepository
+ actor Client
+ participant API as app.api
+ participant App as ResumeScreeningApplication
+ participant Score as ResumeScoringService
+ participant Pred as ModelPredictor
+ participant Prep as clean_text
+ participant Audit as AuditRepository
 
-  Client->>API: POST /v1/predictions (ResumeRequest)
-  API->>API: Pydantic validate schema
-  API->>App: submit(ResumeSubmission)
-  App->>App: validate candidate_name
-  App->>Score: score(resume_text)
-  Score->>Pred: predict(resume_text)
-  Pred->>Prep: clean_text(resume_text)
-  Prep-->>Pred: normalized text
-  Pred->>Pred: predict_proba + rank
-  Pred-->>Score: role, confidence, ranking
-  Score->>Prep: clean_text (explanation keywords)
-  Score-->>App: result + explanation + decision_note
-  App->>Audit: save metadata only
-  Audit-->>App: ok
-  App-->>API: result dict
-  API-->>Client: 200 PredictionResponse
+ Client->>API: POST /v1/predictions (ResumeRequest)
+ API->>API: Pydantic validate schema
+ API->>App: submit(ResumeSubmission)
+ App->>App: validate candidate_name
+ App->>Score: score(resume_text)
+ Score->>Pred: predict(resume_text)
+ Pred->>Prep: clean_text(resume_text)
+ Prep-->>Pred: normalized text
+ Pred->>Pred: predict_proba + rank
+ Pred-->>Score: role, confidence, ranking
+ Score->>Prep: clean_text (explanation keywords)
+ Score-->>App: result + explanation + decision_note
+ App->>Audit: save metadata only
+ Audit-->>App: ok
+ App-->>API: result dict
+ API-->>Client: 200 PredictionResponse
 ```
 
-### 6.2 Online inference (Streamlit — shared domain path)
+### 6.2 Online inference (Streamlit - shared domain path)
 
 ```mermaid
 sequenceDiagram
-  actor Recruiter
-  participant UI as streamlit_app
-  participant Ing as ml.ingestion
-  participant App as ResumeScreeningApplication
+ actor Recruiter
+ participant UI as streamlit_app
+ participant Ing as ml.ingestion
+ participant App as ResumeScreeningApplication
 
-  Recruiter->>UI: upload file or paste text
-  alt file upload
-    UI->>Ing: extract_resume_text(name, bytes)
-    Ing-->>UI: resume_text
-  end
-  Recruiter->>UI: Analyze resume
-  UI->>App: submit(source=upload|text input)
-  Note over UI,App: Same validate → score → audit path as API
-  App-->>UI: prediction + explanation
-  UI-->>Recruiter: role, ranking, audit history
+ Recruiter->>UI: upload file or paste text
+ alt file upload
+ UI->>Ing: extract_resume_text(name, bytes)
+ Ing-->>UI: resume_text
+ end
+ Recruiter->>UI: Analyze resume
+ UI->>App: submit(source=upload|text input)
+ Note over UI,App: Same validate → score → audit path as API
+ App-->>UI: prediction + explanation
+ UI-->>Recruiter: role, ranking, audit history
 ```
 
 ### 6.3 Offline training and release gates
 
 ```mermaid
 sequenceDiagram
-  participant CLI as train.py
-  participant Data as ml.data
-  participant Train as ml.trainer
-  participant QM as quality.model_metrics
-  participant DQ as quality.data_metrics
-  participant FS as models/ + report/
+ participant CLI as train.py
+ participant Data as ml.data
+ participant Train as ml.trainer
+ participant QM as quality.model_metrics
+ participant DQ as quality.data_metrics
+ participant FS as models/ + report/
 
-  CLI->>Data: build_training_data()
-  CLI->>Train: train_model(frame, model_path, metrics_path)
-  Train->>Data: validate_training_data(frame)
-  Train->>Train: clean, split, fit pipeline
-  Train->>QM: compute_classification_metrics(...)
-  Train->>DQ: compute_data_metrics(frame)
-  alt accuracy or F1 below gate
-    Train-->>CLI: raise ValueError (gate failed)
-  else gates pass
-    Train->>Train: refit on full data
-    Train->>FS: joblib.dump model
-    Train->>FS: write metrics_snapshot.json
-    Train-->>CLI: metrics dict
-  end
+ CLI->>Data: build_training_data()
+ CLI->>Train: train_model(frame, model_path, metrics_path)
+ Train->>Data: validate_training_data(frame)
+ Train->>Train: clean, split, fit pipeline
+ Train->>QM: compute_classification_metrics(...)
+ Train->>DQ: compute_data_metrics(frame)
+ alt accuracy or F1 below gate
+ Train-->>CLI: raise ValueError (gate failed)
+ else gates pass
+ Train->>Train: refit on full data
+ Train->>FS: joblib.dump model
+ Train->>FS: write metrics_snapshot.json
+ Train-->>CLI: metrics dict
+ end
 ```
 
 ### 6.4 API startup readiness
 
 ```mermaid
 sequenceDiagram
-  participant Uvicorn
-  participant API as app.api lifespan
-  participant FS as MODEL_PATH
-  participant App as get_application()
+ participant Uvicorn
+ participant API as app.api lifespan
+ participant FS as MODEL_PATH
+ participant App as get_application()
 
-  Uvicorn->>API: startup
-  API->>API: configure_logging()
-  alt model artifact exists
-    API->>App: load ModelPredictor + services
-    App-->>API: ready
-  else missing artifact
-    API->>API: log ERROR (health will 503)
-  end
-  Uvicorn->>API: serve traffic
+ Uvicorn->>API: startup
+ API->>API: configure_logging()
+ alt model artifact exists
+ API->>App: load ModelPredictor + services
+ App-->>API: ready
+ else missing artifact
+ API->>API: log ERROR (health will 503)
+ end
+ Uvicorn->>API: serve traffic
 ```
 
 ---
@@ -554,8 +554,8 @@ sequenceDiagram
 
 | Concern | Implementation |
 |---------|----------------|
-| Configuration | `config.py` — model path, metrics path, audit path, version |
-| Logging | `logging_config.py` — INFO default; rotating 1 MB × 3 backups under `logs/` (runtime, gitignored) |
+| Configuration | `config.py` - model path, metrics path, audit path, version |
+| Logging | `logging_config.py` - INFO default; rotating 1 MB × 3 backups under `logs/` (runtime, gitignored) |
 | Formatting | Black + isort (line length 88) |
 | Linting | Flake8 |
 | Testing | pytest under `tests/` |
@@ -568,20 +568,20 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-  subgraph Research
-    NB[179.ipynb<br/>prototype_clean_text]
-  end
-  subgraph Production
-    MOD[ml.preprocessing.clean_text]
-    T[tests]
-    API[app.api]
-  end
-  NB -.->|same behaviour intent| MOD
-  MOD --> T
-  MOD --> API
+ subgraph Research
+ NB[179.ipynb<br/>prototype_clean_text]
+ end
+ subgraph Production
+ MOD[ml.preprocessing.clean_text]
+ T[tests]
+ API[app.api]
+ end
+ NB -.->|same behaviour intent| MOD
+ MOD --> T
+ MOD --> API
 ```
 
-| Aspect | Research (`179.ipynb`) | Production (`ml/…`) |
+| Aspect | Research (`179.ipynb`) | Production (`ml/...`) |
 |--------|------------------------|---------------------|
 | Purpose | Feasibility / teaching | Repeatable service behaviour |
 | Structure | Inline cell | Importable module |
@@ -612,7 +612,7 @@ flowchart LR
 | 3 | Logging / errors | `logging_config.py` + critical modules |
 | 4 | Format / lint | `report/lint_*.txt`, tool configs |
 | 5 | REST API | `app/api.py`, `app/schemas.py` |
-| 6–7 | Tests | `tests/` |
+| 6-7 | Tests | `tests/` |
 | 8 | Model + data metrics | `quality/`, `report/metrics_snapshot.json` |
 | 9 | Prod experiment + security | Documented in `report/`; controls in validation/audit |
 
