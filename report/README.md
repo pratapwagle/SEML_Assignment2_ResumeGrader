@@ -1,9 +1,15 @@
-# Written report (Taxila)
+# Report and quality evidence
 
-| File | Use |
-|------|-----|
-| `179.pdf` | Primary PDF report (`<groupid>.pdf`) |
-| `179.docx` | Word source (`<groupid>.docx`) |
+Single folder for the Taxila narrative deliverable and generated QA artifacts.
 
-Upload the PDF or DOCX to the Taxila portal as required by the course.
-Technical source code lives in the parent directory of this folder.
+| File | Purpose |
+|------|---------|
+| `179.docx` | Written assignment report (Word) |
+| `179.pdf` | Written assignment report (PDF) — export from DOCX when ready |
+| `metrics_snapshot.json` | Training metrics for `GET /metrics` and UI sidebar (`config.METRICS_PATH`) |
+| `lint_before.txt` / `lint_after.txt` | Code formatting/lint baseline and pass evidence |
+| `pytest_report.txt` | Automated test run evidence |
+| `code_quality_report.txt` | Summary of lint remediation |
+| `model_data_quality_report.txt` | Model/data metric narrative |
+
+Upload `179.pdf` or `179.docx` to Taxila as required. Application source lives in the repository root (parent of this folder).

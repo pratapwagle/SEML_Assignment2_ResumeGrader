@@ -20,7 +20,7 @@ download as ZIP and run from this folder root.
 | Report (PDF/Word) | [`report/179.pdf`](report/179.pdf), [`report/179.docx`](report/179.docx) | Taxila written submission |
 | Notebook (required name) | [`179.ipynb`](179.ipynb) | Research vs production demo |
 | Executed notebook | [`notebooks/179_executed.ipynb`](notebooks/179_executed.ipynb) | Outputs preserved |
-| Evidence | [`reports/`](reports/) | Pytest, lint, metrics snapshot |
+| Report + QA evidence | [`report/`](report/) | DOCX/PDF, pytest, lint, metrics snapshot |
 
 Upload to Taxila as directed by the course (typically `179.pdf` / `179.docx`).
 Use **this folder** (or a git archive of it) as the source ZIP.
@@ -40,9 +40,8 @@ submission/
 ├── quality/             # Model & data quality metrics
 ├── tests/               # pytest suite
 ├── models/              # Trained joblib artifact
-├── reports/             # QA evidence
 ├── notebooks/           # Executed notebook evidence
-└── report/              # 179.pdf / 179.docx
+└── report/              # 179.docx/pdf + lint/pytest/metrics evidence
 ```
 
 Full module map, sequence diagrams, and OpenAPI-style contracts:
@@ -123,13 +122,13 @@ Full request/response schemas and status codes: **[architecture.md §5](architec
 
 ## Verified quality snapshot
 
-Recorded under `reports/` (regenerate with `python train.py` and `pytest`):
+Recorded under `report/` (regenerate with `python train.py` and `pytest`):
 
 - Tests: 35 passed  
 - Model accuracy / weighted F1 / top-3: 1.000 (small synthetic set; assignment evidence)  
 - Multiclass Brier: ~0.725 (monitored)  
 - Data schema valid; missing required values: 0  
-- Black, isort, Flake8: pass (see `reports/lint_*.txt`)
+- Black, isort, Flake8: pass (see `report/lint_*.txt`)
 
 Metrics are **not** a production-performance claim; the dataset is deliberately small to demonstrate engineering workflow and gates.
 

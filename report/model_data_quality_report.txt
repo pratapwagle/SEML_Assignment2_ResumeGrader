@@ -14,7 +14,7 @@ Training-data checks (24-row demonstration dataset):
 - Minority-class fraction: 0.166667
 - Resume-text length mean/std: 76.958 / 8.121
 
-The executable source of truth is reports/metrics_snapshot.json. Accuracy and
+The executable source of truth is report/metrics_snapshot.json. Accuracy and
 weighted F1 are enforced release gates. Other metrics are monitoring signals.
 The synthetic data demonstrates a reproducible ML engineering workflow and is
 not evidence of production generalization.

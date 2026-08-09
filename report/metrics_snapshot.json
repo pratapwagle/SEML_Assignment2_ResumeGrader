@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-08-01T09:09:38+00:00",
+  "generated_at_utc": "2026-08-09T06:14:28+00:00",
   "model_path": "resume_classifier.joblib",
   "model_quality": {
     "accuracy": 1.0,

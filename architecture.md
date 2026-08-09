@@ -20,7 +20,7 @@ modular Python packages, REST API contracts, quality gates, and runtime flows.
 | Course notebook | `179.ipynb` | Research vs production demo (assignment naming) |
 | Executed notebook evidence | `notebooks/179_executed.ipynb` | Saved cell outputs |
 | Written report | `report/179.pdf`, `report/179.docx` | Taxila narrative deliverable |
-| Automated QA | `tests/`, `reports/` | Verification evidence |
+| Automated QA | `tests/`, `report/` | Verification evidence |
 
 The notebook is **not** the production runtime. Training, inference, API, and UI
 are pure Python modules.
@@ -66,22 +66,24 @@ submission/
 │
 ├── tests/                   # pytest suite (unit, ML, API, data)
 ├── models/                  # Versioned model artifact (.joblib)
-├── reports/                 # Lint, pytest, metrics snapshot evidence
 │
 ├── 179.ipynb                # Required assignment notebook name
 ├── notebooks/
 │   └── 179_executed.ipynb   # Notebook with verified outputs
 │
-└── report/
-    ├── 179.pdf              # Submission report (PDF)
-    └── 179.docx             # Submission report (Word)
+└── report/                  # Written deliverable + QA evidence (single folder)
+    ├── 179.docx / 179.pdf   # Taxila report
+    ├── metrics_snapshot.json
+    ├── lint_before.txt / lint_after.txt
+    ├── pytest_report.txt
+    └── …                    # other quality evidence texts
 ```
 
 ### Structure principles
 
 1. **One concern per package** — transport (`app`), ML (`ml`), domain (`services`), metrics (`quality`).
 2. **Shared application service** — API and Streamlit cannot diverge on scoring/audit rules.
-3. **Evidence separated from code** — `reports/`, `report/`, `notebooks/`.
+3. **Evidence and narrative colocated** — `report/` holds the Word/PDF report and lint/pytest/metrics artifacts.
 4. **Git-friendly** — no venv, caches, or local logs checked in (see `.gitignore`).
 
 ---
@@ -149,7 +151,7 @@ flowchart TB
   end
 
   ART[("models/<br/>resume_classifier.joblib")]
-  MET[("reports/<br/>metrics_snapshot.json")]
+  MET[("report/<br/>metrics_snapshot.json")]
 
   UI --> APP
   API --> APP
@@ -479,7 +481,7 @@ sequenceDiagram
   participant Train as ml.trainer
   participant QM as quality.model_metrics
   participant DQ as quality.data_metrics
-  participant FS as models/ + reports/
+  participant FS as models/ + report/
 
   CLI->>Data: build_training_data()
   CLI->>Train: train_model(frame, model_path, metrics_path)
@@ -558,7 +560,7 @@ sequenceDiagram
 | Linting | Flake8 |
 | Testing | pytest under `tests/` |
 | Model persistence | `joblib` → `models/resume_classifier.joblib` |
-| Metrics persistence | JSON → `reports/metrics_snapshot.json` |
+| Metrics persistence | JSON → `report/metrics_snapshot.json` |
 
 ---
 
@@ -593,7 +595,7 @@ flowchart LR
 
 | Process | Command | Port / UI |
 |---------|---------|-----------|
-| Train | `python train.py` | Writes `models/`, `reports/` |
+| Train | `python train.py` | Writes `models/`, `report/` |
 | API | `python run_api.py` | `http://127.0.0.1:8000` |
 | OpenAPI | browser | `http://127.0.0.1:8000/docs` |
 | Recruiter UI | `streamlit run streamlit_app.py` | Streamlit default port |
@@ -608,10 +610,10 @@ flowchart LR
 | 1 | Modular refactor | `ml/`, `services/`, `app/`, `quality/` |
 | 2 | Research vs production | `179.ipynb` vs `ml/preprocessing.py` |
 | 3 | Logging / errors | `logging_config.py` + critical modules |
-| 4 | Format / lint | `reports/lint_*.txt`, tool configs |
+| 4 | Format / lint | `report/lint_*.txt`, tool configs |
 | 5 | REST API | `app/api.py`, `app/schemas.py` |
 | 6–7 | Tests | `tests/` |
-| 8 | Model + data metrics | `quality/`, `reports/metrics_snapshot.json` |
+| 8 | Model + data metrics | `quality/`, `report/metrics_snapshot.json` |
 | 9 | Prod experiment + security | Documented in `report/`; controls in validation/audit |
 
 ---
