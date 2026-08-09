@@ -17,8 +17,7 @@ modular Python packages, REST API contracts, quality gates, and runtime flows.
 | Concern | Where it lives | Role |
 |---------|----------------|------|
 | Production runtime | `ml/`, `services/`, `app/`, `quality/` | Deployable system |
-| Course notebook | `notebooks/179.ipynb` | Research vs production demo (assignment naming) |
-| Executed notebook evidence | `notebooks/179_executed.ipynb` | Saved cell outputs |
+| Course notebook | `179.ipynb` | Research/demo path (`<group>.ipynb`); production in packages |
 | Written report | `report/179.pdf`, `report/179.docx` | Taxila narrative deliverable |
 | Automated QA | `tests/`, `report/` | Verification evidence |
 
@@ -67,9 +66,7 @@ submission/
 ├── tests/ # pytest suite (unit, ML, API, data)
 ├── models/ # Versioned model artifact (.joblib)
 │
-├── notebooks/
-│   ├── 179.ipynb            # Required assignment notebook name
-│   └── 179_executed.ipynb   # Notebook with verified outputs
+├── 179.ipynb                # Required `<group>.ipynb`; research/demo path
 │
 └── report/ # Written deliverable + QA evidence (single folder)
  ├── 179.docx / 179.pdf # Taxila report
@@ -569,7 +566,7 @@ sequenceDiagram
 ```mermaid
 flowchart LR
  subgraph Research
- NB[notebooks/179.ipynb<br/>prototype_clean_text]
+ NB[179.ipynb<br/>prototype_clean_text]
  end
  subgraph Production
  MOD[ml.preprocessing.clean_text]
@@ -581,7 +578,7 @@ flowchart LR
  MOD --> API
 ```
 
-| Aspect | Research (`notebooks/179.ipynb`) | Production (`ml/...`) |
+| Aspect | Research (`179.ipynb`) | Production (`ml/...`) |
 |--------|------------------------|---------------------|
 | Purpose | Feasibility / teaching | Repeatable service behaviour |
 | Structure | Inline cell | Importable module |
@@ -608,7 +605,7 @@ flowchart LR
 | # | Objective | Architecture locus |
 |---|-----------|-------------------|
 | 1 | Modular refactor | `ml/`, `services/`, `app/`, `quality/` |
-| 2 | Research vs production | `notebooks/179.ipynb` vs `ml/preprocessing.py` |
+| 2 | Research vs production | `179.ipynb` vs `ml/preprocessing.py` |
 | 3 | Logging / errors | `logging_config.py` + critical modules |
 | 4 | Format / lint | `report/lint_*.txt`, tool configs |
 | 5 | REST API | `app/api.py`, `app/schemas.py` |

@@ -18,8 +18,7 @@ download as ZIP and run from this folder root.
 | Source + tests | this repository root | Modular Python packages |
 | Architecture | [`architecture.md`](architecture.md) | API spec, structure, diagrams |
 | Report (PDF/Word) | [`report/179.pdf`](report/179.pdf), [`report/179.docx`](report/179.docx) | Taxila written submission |
-| Notebook (required name) | [`notebooks/179.ipynb`](notebooks/179.ipynb) | Research vs production demo |
-| Executed notebook | [`notebooks/179_executed.ipynb`](notebooks/179_executed.ipynb) | Outputs preserved |
+| Notebook (required name) | [`179.ipynb`](179.ipynb) | Research/demo path; production in `ml/`, `app/`, `services/` |
 | Report + QA evidence | [`report/`](report/) | DOCX/PDF, pytest, lint, metrics snapshot |
 
 Upload to Taxila as directed by the course (typically `179.pdf` / `179.docx`).
@@ -39,7 +38,7 @@ submission/
 ├── quality/ # Model & data quality metrics
 ├── tests/ # pytest suite
 ├── models/ # Trained joblib artifact
-├── notebooks/ # 179.ipynb (canonical) and executed evidence
+├── 179.ipynb # Required `<group>.ipynb`; research/demo path
 └── report/ # 179.docx/pdf + lint/pytest/metrics evidence
 ```
 
@@ -58,8 +57,7 @@ Full module map, sequence diagrams, and OpenAPI-style contracts:
 | Layer | Role |
 |-------|------|
 | `ml/`, `services/`, `app/`, `quality/` | **Production system** - run, test, deploy |
-| `notebooks/179.ipynb` | **Course notebook** - research prototype vs production `clean_text` |
-| `notebooks/179_executed.ipynb` | Same notebook with saved execution outputs |
+| `179.ipynb` | Research/demo notebook; production code in `ml/`, `services/`, `app/` |
 
 You do not need Jupyter to run the application.
 
@@ -142,7 +140,6 @@ Metrics are **not** a production-performance claim; the dataset is deliberately 
 | 2024AC05999 | Prasanna R T | Conducted test design review, performed functional validation of candidate scoring workflows, and verified edge-case handling. | 25% |
 | 2024AC05914 | Pranav Mehrotra | Reviewed quality assurance evidence, conducted code audit reviews, and validated final submission package integrity. | 25% |
 
-> Fill quantitative contribution percentages (sum to 100) in the notebook and report before final Taxila upload if still blank.
 
 ---
 
