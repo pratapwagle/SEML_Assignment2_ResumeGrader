@@ -48,6 +48,11 @@ submission/
 Full module map, sequence diagrams, and OpenAPI-style contracts:
 **[architecture.md](architecture.md)**.
 
+**Component diagram (Objective 1):** Mermaid source
+[`docs/component_diagram.mmd`](docs/component_diagram.mmd), rendered PNG
+[`docs/component_diagram.png`](docs/component_diagram.png) (also embedded in
+`report/179.docx` §2 as Figure 1b).
+
 ---
 
 ## Production vs notebook

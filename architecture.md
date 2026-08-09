@@ -106,47 +106,93 @@ flowchart LR
   System --> Metrics
 ```
 
-### 3.2 Container view
+### 3.2 Component diagram (aligned with code structure)
+
+Evaluator-facing view of **packages, classes, and key functions** for Assignment II
+Objective 1. Edges match runtime/import dependencies verified against the
+`submission/` codebase (solid = primary control/data flow; dotted = config/logging).
+
+Source: [`docs/component_diagram.mmd`](docs/component_diagram.mmd)  
+Rendered asset: [`docs/component_diagram.png`](docs/component_diagram.png)  
+(Embedded in the Word report under §2 Refactoring as Figure 1b.)
 
 ```mermaid
 flowchart TB
-  subgraph Interfaces
-    UI[streamlit_app.py]
-    API[app/api.py FastAPI]
+  subgraph Clients["Clients / entrypoints"]
+    UI["streamlit_app.py<br/>Recruiter UI"]
+    API["app.api + app.schemas<br/>FastAPI REST"]
+    TRAIN_CLI["train.py<br/>offline entrypoint"]
   end
 
-  subgraph Domain
-    APP[ResumeScreeningApplication]
-    SCORE[ResumeScoringService]
-    AUDIT[AuditRepository]
+  subgraph Domain["services/ — domain layer"]
+    APP["ResumeScreeningApplication<br/>+ ResumeSubmission"]
+    SCORE["ResumeScoringService"]
+    AUDIT["AuditRepository"]
   end
 
-  subgraph ML
-    PRE[clean_text]
-    PRED[ModelPredictor]
-    TRAIN[train_model]
-    DATA[data + ingestion]
+  subgraph ML["ml/ — ML lifecycle"]
+    PRE["preprocessing.clean_text"]
+    PRED["ModelPredictor"]
+    ING["ingestion.extract_resume_text"]
+    DATA["data<br/>build_training_data<br/>validate_training_data<br/>DataQualityReport"]
+    TRAIN["trainer<br/>build_pipeline<br/>train_model"]
   end
 
-  subgraph Quality
-    MQ[model_metrics]
-    DQ[data_metrics]
+  subgraph Quality["quality/"]
+    MQ["model_metrics<br/>compute_classification_metrics"]
+    DQ["data_metrics<br/>compute_data_metrics<br/>detect_text_length_drift"]
   end
+
+  subgraph CrossCutting["Cross-cutting"]
+    CFG["config.py"]
+    LOG["logging_config.py"]
+  end
+
+  ART[("models/<br/>resume_classifier.joblib")]
+  MET[("reports/<br/>metrics_snapshot.json")]
 
   UI --> APP
   API --> APP
+  UI --> ING
   APP --> SCORE
   APP --> AUDIT
   SCORE --> PRED
+  SCORE --> PRE
   PRED --> PRE
+  PRED --> ART
+  API --> MET
+  UI --> MET
+  TRAIN_CLI --> DATA
+  TRAIN_CLI --> TRAIN
   TRAIN --> DATA
+  TRAIN --> PRE
   TRAIN --> MQ
   TRAIN --> DQ
-  TRAIN -->|writes| MODEL[(models/)]
-  TRAIN -->|writes| SNAP[(reports/metrics_snapshot.json)]
-  PRED -->|reads| MODEL
-  API -->|reads| SNAP
+  TRAIN --> ART
+  TRAIN --> MET
+  UI -.-> CFG
+  API -.-> CFG
+  TRAIN_CLI -.-> CFG
+  UI -.-> LOG
+  API -.-> LOG
+  TRAIN_CLI -.-> LOG
 ```
+
+| Component (class / module) | Responsibility |
+|----------------------------|----------------|
+| `streamlit_app` / `app.api` | Entrypoints; wire services; call `ResumeScreeningApplication` |
+| `train.py` | Offline entry: `build_training_data` → `train_model` |
+| `ResumeScreeningApplication` | Orchestrate validate → score → audit for API and UI |
+| `ResumeScoringService` | Prediction + keyword explanation (`clean_text`) + advisory note |
+| `AuditRepository` | Persist metadata only (no raw resume text) |
+| `ModelPredictor` | Load joblib artifact; ranked class probabilities |
+| `clean_text` (`ml.preprocessing`) | Typed normalization and input guards |
+| `extract_resume_text` (`ml.ingestion`) | TXT/PDF/DOCX extraction and size/type checks |
+| `ml.data` | Dataset build, schema validation, `DataQualityReport` |
+| `train_model` (`ml.trainer`) | Fit pipeline, quality gates, persist artifact/metrics |
+| `quality.*` | Model and data metrics (incl. text-length drift helper) |
+| `config` / `logging_config` | Paths, version, rotating logs |
+| `app.schemas` | REST request/response contracts |
 
 ### 3.3 Module dependency diagram
 

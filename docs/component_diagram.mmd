@@ -1,0 +1,79 @@
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "primaryColor": "#E8F1FB",
+    "primaryTextColor": "#1B3A4B",
+    "primaryBorderColor": "#2E75B6",
+    "lineColor": "#2E75B6",
+    "secondaryColor": "#F5F7FA",
+    "tertiaryColor": "#FFF4E5",
+    "fontFamily": "Segoe UI, Arial, sans-serif",
+    "fontSize": "13px"
+  }
+}}%%
+flowchart TB
+  subgraph Clients["Clients / entrypoints"]
+    UI["streamlit_app.py<br/>Recruiter UI"]
+    API["app.api + app.schemas<br/>FastAPI REST"]
+    TRAIN_CLI["train.py<br/>offline entrypoint"]
+  end
+
+  subgraph Domain["services/ — domain layer"]
+    APP["ResumeScreeningApplication<br/>+ ResumeSubmission"]
+    SCORE["ResumeScoringService"]
+    AUDIT["AuditRepository"]
+  end
+
+  subgraph ML["ml/ — ML lifecycle"]
+    PRE["preprocessing.clean_text"]
+    PRED["ModelPredictor"]
+    ING["ingestion.extract_resume_text"]
+    DATA["data<br/>build_training_data<br/>validate_training_data<br/>DataQualityReport"]
+    TRAIN["trainer<br/>build_pipeline<br/>train_model"]
+  end
+
+  subgraph Quality["quality/"]
+    MQ["model_metrics<br/>compute_classification_metrics"]
+    DQ["data_metrics<br/>compute_data_metrics<br/>detect_text_length_drift"]
+  end
+
+  subgraph CrossCutting["Cross-cutting"]
+    CFG["config.py"]
+    LOG["logging_config.py"]
+  end
+
+  ART[("models/<br/>resume_classifier.joblib")]
+  MET[("reports/<br/>metrics_snapshot.json")]
+
+  %% Online runtime path
+  UI --> APP
+  API --> APP
+  UI --> ING
+  APP --> SCORE
+  APP --> AUDIT
+  SCORE --> PRED
+  SCORE --> PRE
+  PRED --> PRE
+  PRED --> ART
+
+  %% Metrics consumers (read snapshot)
+  API --> MET
+  UI --> MET
+
+  %% Offline training path
+  TRAIN_CLI --> DATA
+  TRAIN_CLI --> TRAIN
+  TRAIN --> DATA
+  TRAIN --> PRE
+  TRAIN --> MQ
+  TRAIN --> DQ
+  TRAIN --> ART
+  TRAIN --> MET
+
+  %% Config / logging (composition and observability)
+  UI -.-> CFG
+  API -.-> CFG
+  TRAIN_CLI -.-> CFG
+  UI -.-> LOG
+  API -.-> LOG
+  TRAIN_CLI -.-> LOG
