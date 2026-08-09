@@ -1,0 +1,13 @@
+Final code-quality evidence generated on 2026-08-01 after all implementation
+changes.
+
+$ black --check .
+All Python source files would be left unchanged.
+
+$ isort --check-only .
+PASS - no incorrectly sorted imports.
+
+$ flake8 .
+PASS - no violations.
+
+Result: all configured formatting and lint gates pass.

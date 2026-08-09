@@ -1,0 +1,13 @@
+Pytest verification generated on 2026-08-01.
+
+$ pytest -q
+...................................                                      [100%]
+35 passed in 0.51s
+
+Coverage by intent:
+- preprocessing and input validation
+- Assignment I ingestion/audit continuity
+- training quality gates, decreasing loss, determinism and persistence
+- inference contract, role direction and text invariance
+- data/model quality metrics and text-length drift detection
+- API lifecycle, aliases, metrics, audit privacy and error behavior

@@ -1,0 +1,20 @@
+Model and data quality evidence generated on 2026-08-01.
+
+Model evaluation (12-row fixed stratified validation set):
+- Accuracy: 1.000 (release gate >= 0.800)
+- Weighted F1: 1.000 (release gate >= 0.800)
+- Top-3 accuracy: 1.000
+- Multiclass Brier score: 0.724855 (lower is better)
+
+Training-data checks (24-row demonstration dataset):
+- Schema valid: true
+- Missing-value rate: 0.000
+- Duplicate rows: 0
+- Class count: 6
+- Minority-class fraction: 0.166667
+- Resume-text length mean/std: 76.958 / 8.121
+
+The executable source of truth is reports/metrics_snapshot.json. Accuracy and
+weighted F1 are enforced release gates. Other metrics are monitoring signals.
+The synthetic data demonstrates a reproducible ML engineering workflow and is
+not evidence of production generalization.

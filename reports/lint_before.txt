@@ -1,0 +1,14 @@
+Baseline lint evidence captured during the initial review on 2026-07-26,
+before production refactoring and formatting remediation.
+
+$ black --check .
+15 files would be reformatted, 4 files would be left unchanged.
+
+$ isort --check-only .
+ERROR: 6 files had incorrectly sorted imports.
+
+$ flake8 .
+29 violations, primarily E302 blank-line findings and one unused import.
+
+This report records the original review result. The code was then refactored,
+formatted, and rechecked; see lint_after.txt for current executable evidence.

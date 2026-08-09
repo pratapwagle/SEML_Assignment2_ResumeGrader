@@ -1,0 +1,9 @@
+Code-quality summary generated on 2026-08-01.
+
+The initial-review baseline is preserved in lint_before.txt. The corrected,
+reproducible result is preserved in lint_after.txt.
+
+Final status:
+- Black: pass
+- isort: pass
+- Flake8: pass
