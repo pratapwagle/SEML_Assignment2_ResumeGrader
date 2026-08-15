@@ -44,12 +44,23 @@ def extract_resume_text(filename: str, payload: bytes) -> str:
         if suffix == ".txt":
             text = payload.decode("utf-8", errors="ignore")
         elif suffix == ".pdf":
-            from pypdf import PdfReader
+            try:
+                from pypdf import PdfReader
+            except ImportError as exc:
+                raise ImportError(
+                    "PDF ingestion requires pypdf. Install with: pip install pypdf"
+                ) from exc
 
             reader = PdfReader(io.BytesIO(payload))
             text = "\n".join(page.extract_text() or "" for page in reader.pages)
         else:
-            from docx import Document
+            try:
+                from docx import Document
+            except ImportError as exc:
+                raise ImportError(
+                    "DOCX ingestion requires python-docx. "
+                    "Install with: pip install python-docx"
+                ) from exc
 
             document = Document(io.BytesIO(payload))
             text = "\n".join(
@@ -57,9 +68,11 @@ def extract_resume_text(filename: str, payload: bytes) -> str:
                 for paragraph in document.paragraphs
                 if paragraph.text.strip()
             )
-    except Exception:
+    except ImportError:
+        raise
+    except Exception as exc:
         logger.exception("Resume extraction failed for file type %s", suffix)
-        raise ValueError("Resume text could not be extracted") from None
+        raise ValueError(f"Resume text could not be extracted: {exc}") from exc
 
     text = text.strip()
     if not text:

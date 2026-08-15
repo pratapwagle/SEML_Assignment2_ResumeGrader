@@ -1,13 +1,13 @@
 from pathlib import Path
 
 import joblib
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import SGDClassifier
+import pytest
+from sklearn.exceptions import ConvergenceWarning
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import log_loss
-from sklearn.preprocessing import LabelEncoder
 
 from ml.data import build_training_data
+from ml.features import FeatureEngineer
 from ml.preprocessing import clean_text
 from ml.trainer import (
     MIN_ACCURACY,
@@ -30,6 +30,8 @@ def test_training_creates_model_and_quality_metrics(tmp_path: Path):
     assert metrics["duplicate_rows"] == 0
     assert 0.0 <= metrics["multiclass_brier"] <= 2.0
     assert metrics["top_3_accuracy"] >= metrics["accuracy"]
+    assert "length_drift" in metrics
+    assert "drift_detected" in metrics["length_drift"]
 
 
 def test_model_can_overfit_small_batch():
@@ -43,27 +45,29 @@ def test_model_can_overfit_small_batch():
 def test_training_log_loss_decreases():
     frame = build_training_data()
     texts = frame["resume_text"].map(clean_text)
-    vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-    features = vectorizer.fit_transform(texts)
-    labels = LabelEncoder().fit_transform(frame["job_role"])
-    classes = np.unique(labels)
-    classifier = SGDClassifier(
-        loss="log_loss",
+    features = FeatureEngineer(ngram_range=(1, 2), min_df=1).fit_transform(texts)
+    classifier = LogisticRegression(
+        max_iter=1,
+        warm_start=True,
+        solver="lbfgs",
         random_state=42,
-        learning_rate="constant",
-        eta0=0.05,
     )
     losses = []
-    for _ in range(10):
-        classifier.partial_fit(features, labels, classes=classes)
-        losses.append(
-            log_loss(
-                labels,
-                classifier.predict_proba(features),
-                labels=classes,
+    with pytest.warns(ConvergenceWarning):
+        for step in range(1, 16):
+            classifier.max_iter = step
+            classifier.fit(features, frame["job_role"])
+            losses.append(
+                log_loss(frame["job_role"], classifier.predict_proba(features))
             )
-        )
     assert losses[-1] < losses[0]
+
+
+def test_quality_gate_rejects_unusable_model(tmp_path: Path):
+    frame = build_training_data().copy()
+    frame["job_role"] = frame["job_role"].sample(frac=1, random_state=0).to_numpy()
+    with pytest.raises(ValueError, match="quality gate failed"):
+        train_model(frame, tmp_path / "bad.joblib")
 
 
 def test_training_is_deterministic():

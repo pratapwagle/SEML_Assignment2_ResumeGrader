@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 from typing import Any
@@ -46,6 +47,7 @@ class ModelPredictor:
             Exception: Propagated if the underlying pipeline fails.
         """
         cleaned = clean_text(resume_text)
+        _warn_if_length_drifted(len(resume_text))
         try:
             probabilities = self.pipeline.predict_proba([cleaned])[0]
         except Exception:
@@ -71,3 +73,28 @@ class ModelPredictor:
             result["confidence"],
         )
         return result
+
+
+def _warn_if_length_drifted(resume_characters: int) -> None:
+    """Log a warning when one resume is more than three sigma from training."""
+    try:
+        from config import METRICS_PATH
+    except Exception:
+        return
+    if not METRICS_PATH.exists():
+        return
+    try:
+        snapshot = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
+        data_quality = snapshot.get("data_quality", {})
+        reference_mean = float(data_quality.get("text_length_mean", 0.0))
+        reference_std = float(data_quality.get("text_length_std", 0.0))
+    except (OSError, ValueError, TypeError, KeyError):
+        return
+    if reference_std <= 0:
+        return
+    z_score = (resume_characters - reference_mean) / reference_std
+    if abs(z_score) > 3.0:
+        logger.warning(
+            "Resume length z-score=%.2f exceeds three-sigma training baseline",
+            z_score,
+        )

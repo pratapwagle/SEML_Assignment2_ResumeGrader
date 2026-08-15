@@ -10,14 +10,14 @@ from typing import Any
 
 import joblib
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 
 from ml.data import validate_training_data
+from ml.features import FeatureEngineer
 from ml.preprocessing import clean_text
-from quality.data_metrics import compute_data_metrics
+from quality.data_metrics import compute_data_metrics, detect_text_length_drift
 from quality.model_metrics import compute_classification_metrics
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def build_pipeline() -> Pipeline:
     """
     return Pipeline(
         [
-            ("tfidf", TfidfVectorizer(ngram_range=(1, 2), min_df=1)),
+            ("features", FeatureEngineer(ngram_range=(1, 2), min_df=1)),
             ("classifier", LogisticRegression(max_iter=1000, random_state=42)),
         ]
     )
@@ -85,6 +85,13 @@ def train_model(
         pipeline.classes_,
     )
     data_metrics = compute_data_metrics(frame)
+    length_drift = detect_text_length_drift(
+        reference_mean=float(x_train.str.len().mean()),
+        reference_std=float(x_train.str.len().std(ddof=0)),
+        current_lengths=x_test.str.len().tolist(),
+    )
+    data_metrics["length_drift_detected"] = length_drift["drift_detected"]
+    data_metrics["mean_length_z_score"] = length_drift["mean_length_z_score"]
     metrics = {
         **model_metrics,
         "validation_rows": int(len(x_test)),
@@ -92,6 +99,7 @@ def train_model(
         "missing_values": data_quality.missing_values,
         "duplicate_rows": data_quality.duplicate_rows,
         "data_quality": data_metrics,
+        "length_drift": length_drift,
     }
     if metrics["accuracy"] < MIN_ACCURACY or metrics["weighted_f1"] < MIN_WEIGHTED_F1:
         logger.error("Model quality gate failed: %s", metrics)
@@ -121,6 +129,7 @@ def train_model(
                 ]
             },
             "data_quality": data_metrics,
+            "length_drift": length_drift,
             "quality_gates": {
                 "minimum_accuracy": MIN_ACCURACY,
                 "minimum_weighted_f1": MIN_WEIGHTED_F1,

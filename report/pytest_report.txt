@@ -1,13 +1,70 @@
-Pytest verification generated on 2026-08-01.
+Pytest verification generated on 2026-08-15 from a live run in Files/179.
 
-$ pytest -q
-...................................                                      [100%]
-35 passed in 0.51s
+$ python -m pytest -v --tb=no
+============================= test session starts =============================
+platform win32 -- Python 3.13.14, pytest-9.1.1
+collecting ... collected 44 items
 
-Coverage by intent:
-- preprocessing and input validation
-- Assignment I ingestion/audit continuity
-- training quality gates, decreasing loss, determinism and persistence
-- inference contract, role direction and text invariance
-- data/model quality metrics and text-length drift detection
-- API lifecycle, aliases, metrics, audit privacy and error behavior
+tests/test_api.py::test_health_endpoint PASSED
+tests/test_api.py::test_health_endpoint_reports_corrupt_model PASSED
+tests/test_api.py::test_health_endpoint_reports_missing_model PASSED
+tests/test_api.py::test_prediction_endpoint_contract PASSED
+tests/test_api.py::test_predict_alias_uses_shared_application_layer PASSED
+tests/test_api.py::test_prediction_endpoint_persists_privacy_aware_audit PASSED
+tests/test_api.py::test_prediction_endpoint_rejects_short_input PASSED
+tests/test_api.py::test_prediction_endpoint_rejects_semantically_empty_input PASSED
+tests/test_api.py::test_prediction_endpoint_rejects_blank_candidate_name PASSED
+tests/test_api.py::test_metrics_endpoint_returns_training_snapshot PASSED
+tests/test_api.py::test_metrics_endpoint_returns_404_when_snapshot_missing PASSED
+tests/test_api.py::test_api_lifespan_loads_model_once PASSED
+tests/test_continuity.py::test_txt_resume_ingestion_preserves_assignment_one_capability PASSED
+tests/test_continuity.py::test_pdf_resume_ingestion_extracts_text PASSED
+tests/test_continuity.py::test_docx_resume_ingestion_extracts_text PASSED
+tests/test_continuity.py::test_unsupported_resume_file_is_rejected PASSED
+tests/test_continuity.py::test_audit_repository_stores_metadata_without_raw_resume PASSED
+tests/test_data_quality.py::test_data_schema_and_missing_values PASSED
+tests/test_data_quality.py::test_invalid_schema_is_rejected PASSED
+tests/test_data_quality.py::test_missing_required_values_are_rejected PASSED
+tests/test_features.py::test_feature_engineer_fit_transform_shape PASSED
+tests/test_features.py::test_feature_engineer_is_deterministic PASSED
+tests/test_features.py::test_feature_engineer_handles_unseen_tokens PASSED
+tests/test_features.py::test_training_pipeline_uses_feature_engineer_step PASSED
+tests/test_inference.py::test_inference_output_shape_and_range PASSED
+tests/test_inference.py::test_directional_behavior_for_qa_keywords PASSED
+tests/test_inference.py::test_directional_behavior_for_multiple_roles[DevOps] PASSED
+tests/test_inference.py::test_directional_behavior_for_multiple_roles[Frontend] PASSED
+tests/test_inference.py::test_inference_is_invariant_to_case_and_spacing PASSED
+tests/test_inference.py::test_inference_rejects_empty_input PASSED
+tests/test_preprocessing.py::test_clean_text_normalizes_case_and_spacing PASSED
+tests/test_preprocessing.py::test_clean_text_rejects_empty_input PASSED
+tests/test_preprocessing.py::test_clean_text_rejects_non_string_input PASSED
+tests/test_preprocessing.py::test_clean_text_rejects_input_without_usable_characters PASSED
+tests/test_quality_metrics.py::test_data_metrics_measure_completeness_balance_and_length PASSED
+tests/test_quality_metrics.py::test_data_metrics_report_invalid_schema_without_raising PASSED
+tests/test_quality_metrics.py::test_text_length_drift_detects_large_shift PASSED
+tests/test_quality_metrics.py::test_text_length_drift_rejects_empty_batch PASSED
+tests/test_training.py::test_training_creates_model_and_quality_metrics PASSED
+tests/test_training.py::test_model_can_overfit_small_batch PASSED
+tests/test_training.py::test_training_log_loss_decreases PASSED
+tests/test_training.py::test_quality_gate_rejects_unusable_model PASSED
+tests/test_training.py::test_training_is_deterministic PASSED
+tests/test_training.py::test_model_persistence_roundtrip PASSED
+
+============================= 44 passed ==============================
+
+Unabridged console transcript: report/pytest_verbose.txt
+Screenshot used in the report: Screenshots/Pytest_UnitTests.png
+
+Module inventory (43 functions, 44 collected items):
+
+Module                         Functions   Collected
+tests/test_api.py                     12          12
+tests/test_continuity.py               5           5
+tests/test_data_quality.py             3           3
+tests/test_features.py                 4           4
+tests/test_inference.py                5           6
+tests/test_preprocessing.py            4           4
+tests/test_quality_metrics.py          4           4
+tests/test_training.py                 6           6
+                                   -----       -----
+Total                                 43          44

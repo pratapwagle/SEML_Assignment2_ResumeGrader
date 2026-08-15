@@ -42,7 +42,11 @@ async def lifespan(_: FastAPI):
 app = FastAPI(
     title="Group 179 Resume Screening API",
     version=MODEL_VERSION,
-    description="Production-style inference API for Assignment II.",
+    description=(
+        "Production-style inference API for Assignment II. "
+        "Authentication and authorization are not implemented in this coursework "
+        "demo and would be required before production use."
+    ),
     lifespan=lifespan,
 )
 
@@ -86,6 +90,14 @@ def health() -> HealthResponse:
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Model artifact is unavailable",
         )
+    try:
+        get_application()
+    except Exception:
+        logger.exception("Readiness check failed; model artifact could not be loaded")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Model artifact is unavailable",
+        ) from None
     return HealthResponse(
         status="healthy",
         model_loaded=True,

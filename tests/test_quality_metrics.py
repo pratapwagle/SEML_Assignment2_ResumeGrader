@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 
 from ml.data import build_training_data
@@ -12,6 +13,12 @@ def test_data_metrics_measure_completeness_balance_and_length():
     assert metrics["class_count"] == 6
     assert metrics["minority_class_fraction"] > 0.0
     assert metrics["text_length_mean"] > 0.0
+
+
+def test_data_metrics_report_invalid_schema_without_raising():
+    metrics = compute_data_metrics(pd.DataFrame({"text": ["example"]}))
+    assert metrics["schema_valid"] is False
+    assert metrics["class_count"] == 0
 
 
 def test_text_length_drift_detects_large_shift():

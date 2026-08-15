@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-08-09T06:14:28+00:00",
+  "generated_at_utc": "2026-08-15T13:43:58+00:00",
   "model_path": "resume_classifier.joblib",
   "model_quality": {
     "accuracy": 1.0,
@@ -15,7 +15,15 @@
     "class_count": 6,
     "minority_class_fraction": 0.16666666666666666,
     "text_length_mean": 76.95833333333333,
-    "text_length_std": 8.121366709010388
+    "text_length_std": 8.121366709010388,
+    "length_drift_detected": false,
+    "mean_length_z_score": -0.1276397583184611
+  },
+  "length_drift": {
+    "reference_mean": 77.41666666666667,
+    "current_mean": 76.5,
+    "mean_length_z_score": -0.1276397583184611,
+    "drift_detected": false
   },
   "quality_gates": {
     "minimum_accuracy": 0.8,

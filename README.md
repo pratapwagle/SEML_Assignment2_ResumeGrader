@@ -6,18 +6,18 @@
 
 Production-style ML application for resume screening: modular training and
 inference, FastAPI service, Streamlit recruiter UI, automated tests, and
-quality metrics. This directory is the **submission package** - clone or
+quality metrics. This directory is the **179 package** — clone or
 download as ZIP and run from this folder root.
 
 ---
 
-## What to submit
+## Deliverables
 
 | Deliverable | Path | Notes |
 |-------------|------|--------|
 | Source + tests | this repository root | Modular Python packages |
 | Architecture | [`architecture.md`](architecture.md) | API spec, structure, diagrams |
-| Report (PDF/Word) | [`report/179.pdf`](report/179.pdf), [`report/179.docx`](report/179.docx) | Taxila written submission |
+| Report (PDF/Word) | [`report/179.pdf`](report/179.pdf), [`report/179.docx`](report/179.docx) | Taxila written report |
 | Notebook (required name) | [`179.ipynb`](179.ipynb) | Research/demo path; production in `ml/`, `app/`, `services/` |
 | Report + QA evidence | [`report/`](report/) | DOCX/PDF, pytest, lint, metrics snapshot |
 
@@ -26,20 +26,49 @@ Use **this folder** (or a git archive of it) as the source ZIP.
 
 ---
 
-## Repository layout (summary)
+## Repository layout (production code)
+
+Run everything from this folder (`179/`). Research notebook `179.ipynb` is
+kept out of the tree below; it is not required to run the system.
 
 ```text
-submission/
-├── architecture.md # System architecture & API contract
-├── README.md # This file
-├── app/ # REST API (FastAPI)
-├── ml/ # Data, ingestion, preprocess, train, infer
-├── services/ # Domain orchestration, scoring, audit
-├── quality/ # Model & data quality metrics
-├── tests/ # pytest suite
-├── models/ # Trained joblib artifact
-├── 179.ipynb # Required `<group>.ipynb`; research/demo path
-└── report/ # 179.docx/pdf + lint/pytest/metrics evidence
+179/
+├── app/                      # FastAPI transport
+│   ├── __init__.py
+│   ├── api.py                # /health, /predict, /v1/predictions, /metrics
+│   └── schemas.py            # Pydantic request/response contracts
+├── ml/                       # ML lifecycle
+│   ├── __init__.py
+│   ├── data.py               # dataset + schema validation
+│   ├── ingestion.py          # TXT / PDF / DOCX extraction
+│   ├── preprocessing.py      # clean_text
+│   ├── features.py           # FeatureEngineer (TF-IDF)
+│   ├── trainer.py            # train, quality gates, persist
+│   └── predictor.py          # load artifact + ranked inference
+├── services/                 # domain layer (API and Streamlit share this)
+│   ├── __init__.py
+│   ├── application.py        # validate → score → audit
+│   ├── scoring.py            # explanation + advisory decision note
+│   └── audit.py              # metadata only; no raw resume text
+├── quality/
+│   ├── __init__.py
+│   ├── data_metrics.py
+│   └── model_metrics.py
+├── tests/
+│   ├── conftest.py
+│   ├── test_api.py
+│   ├── test_continuity.py
+│   ├── test_data_quality.py
+│   ├── test_features.py
+│   ├── test_inference.py
+│   ├── test_preprocessing.py
+│   ├── test_quality_metrics.py
+│   └── test_training.py
+├── config.py
+├── logging_config.py
+├── train.py                  # offline training
+├── run_api.py                # uvicorn on 127.0.0.1:8000
+└── streamlit_app.py          # recruiter UI
 ```
 
 Full module map, sequence diagrams, and OpenAPI-style contracts:
@@ -66,7 +95,7 @@ You do not need Jupyter to run the application.
 ## Quick start
 
 ```bash
-# From this directory (submission/)
+# From this directory (179/)
 python -m venv .venv
 
 # Windows
@@ -83,7 +112,29 @@ python run_api.py
 
 - API docs: http://127.0.0.1:8000/docs 
 - Health: http://127.0.0.1:8000/health 
-- Recruiter UI: `streamlit run streamlit_app.py`
+- Recruiter UI: `streamlit run streamlit_app.py` (candidate name, TXT/PDF/DOCX upload or paste, explanation, audit history)
+
+### Docker
+
+From this `179/` folder:
+
+```bash
+docker build -t group179-resume-screening:latest .
+docker run --rm -p 8000:8000 group179-resume-screening:latest
+```
+
+API: http://127.0.0.1:8000/docs
+
+API and recruiter UI together:
+
+```bash
+docker compose up --build
+```
+
+- API: http://127.0.0.1:8000/docs
+- Recruiter UI: http://127.0.0.1:8501
+
+The image default command is FastAPI on `0.0.0.0:8000`. Streamlit is started only via compose (or by overriding the command).
 
 ### Example prediction
 
@@ -115,13 +166,16 @@ flake8 .
 
 Full request/response schemas and status codes: **[architecture.md §5](architecture.md)**.
 
+This assignment API is unauthenticated. Authentication and authorization are
+out of scope here and would be required before production use.
+
 ---
 
 ## Verified quality snapshot
 
 Recorded under `report/` (regenerate with `python train.py` and `pytest`):
 
-- Tests: 35 passed 
+- Tests: 44 collected / 43 functions (one parametrized case) 
 - Model accuracy / weighted F1 / top-3: 1.000 (small synthetic set; assignment evidence) 
 - Multiclass Brier: ~0.725 (monitored) 
 - Data schema valid; missing required values: 0 
@@ -136,19 +190,8 @@ Metrics are **not** a production-performance claim; the dataset is deliberately 
 | BITS ID | Name | Qualitative Task Description | Percentage |
 |---------|------|----------------------------|------------|
 | 2025AB05113 | Prashant | Implemented ML training & preprocessing pipelines, built FastAPI REST endpoints, authored automated Pytest suite, and drafted initial report sections. | 25% |
-| 2025AA05032 | Prathap Wagle | Designed system architecture, integrated Streamlit UI & application layer, authored main report, added code comments, and validated submission readiness. | 25% |
+| 2025AA05032 | Prathap Wagle | Designed system architecture, integrated Streamlit UI & application layer, authored main report, added code comments, and validated package readiness. | 25% |
 | 2024AC05999 | Prasanna R T | Conducted test design review, performed functional validation of candidate scoring workflows, and verified edge-case handling. | 25% |
-| 2024AC05914 | Pranav Mehrotra | Reviewed quality assurance evidence, conducted code audit reviews, and validated final submission package integrity. | 25% |
+| 2024AC05914 | Pranav Mehrotra | Reviewed quality assurance evidence, conducted code audit reviews, and validated final package integrity. | 25% |
 
 
----
-
-## Git / ZIP hygiene
-
-```bash
-# Create a clean archive of this package only
-git archive -o Group179_Assignment_II.zip HEAD
-# or zip this folder after excluding .venv and caches (see .gitignore)
-```
-
-Do **not** commit: `.venv/`, `__pycache__/`, `.pytest_cache/`, `logs/`, local audit CSV under `data/`.

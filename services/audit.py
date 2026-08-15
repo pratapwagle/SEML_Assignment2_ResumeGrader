@@ -56,7 +56,12 @@ class AuditRepository:
             "explanation": result["explanation"],
         }
         history = self.list_results()
-        updated = pd.concat([history, pd.DataFrame([record])], ignore_index=True)
+        new_row = pd.DataFrame([record], columns=AUDIT_COLUMNS)
+        updated = (
+            new_row
+            if history.empty
+            else pd.concat([history, new_row], ignore_index=True)
+        )
         self.storage_path.parent.mkdir(parents=True, exist_ok=True)
         updated.to_csv(self.storage_path, index=False)
         logger.info(

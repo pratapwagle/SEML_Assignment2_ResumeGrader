@@ -1,1 +1,1 @@
-"""Machine-learning lifecycle: data, ingestion, preprocessing, train, infer."""
+"""Machine-learning lifecycle: data, ingestion, features, train, infer."""

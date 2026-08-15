@@ -1,0 +1,55 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\prath\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\prath\Documents\GitHub\Mtech\SE4ML_Assignment1\SEML_Group179_Assignment_II (1)\Group179_Assignment_II_SHARE\Files\179
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.10.0
+collecting ... collected 44 items
+
+tests/test_api.py::test_health_endpoint PASSED                           [  2%]
+tests/test_api.py::test_health_endpoint_reports_corrupt_model PASSED     [  4%]
+tests/test_api.py::test_health_endpoint_reports_missing_model PASSED     [  6%]
+tests/test_api.py::test_prediction_endpoint_contract PASSED              [  9%]
+tests/test_api.py::test_predict_alias_uses_shared_application_layer PASSED [ 11%]
+tests/test_api.py::test_prediction_endpoint_persists_privacy_aware_audit PASSED [ 13%]
+tests/test_api.py::test_prediction_endpoint_rejects_short_input PASSED   [ 15%]
+tests/test_api.py::test_prediction_endpoint_rejects_semantically_empty_input PASSED [ 18%]
+tests/test_api.py::test_prediction_endpoint_rejects_blank_candidate_name PASSED [ 20%]
+tests/test_api.py::test_metrics_endpoint_returns_training_snapshot PASSED [ 22%]
+tests/test_api.py::test_metrics_endpoint_returns_404_when_snapshot_missing PASSED [ 25%]
+tests/test_api.py::test_api_lifespan_loads_model_once PASSED             [ 27%]
+tests/test_continuity.py::test_txt_resume_ingestion_preserves_assignment_one_capability PASSED [ 29%]
+tests/test_continuity.py::test_pdf_resume_ingestion_extracts_text PASSED [ 31%]
+tests/test_continuity.py::test_docx_resume_ingestion_extracts_text PASSED [ 34%]
+tests/test_continuity.py::test_unsupported_resume_file_is_rejected PASSED [ 36%]
+tests/test_continuity.py::test_audit_repository_stores_metadata_without_raw_resume PASSED [ 38%]
+tests/test_data_quality.py::test_data_schema_and_missing_values PASSED   [ 40%]
+tests/test_data_quality.py::test_invalid_schema_is_rejected PASSED       [ 43%]
+tests/test_data_quality.py::test_missing_required_values_are_rejected PASSED [ 45%]
+tests/test_features.py::test_feature_engineer_fit_transform_shape PASSED [ 47%]
+tests/test_features.py::test_feature_engineer_is_deterministic PASSED    [ 50%]
+tests/test_features.py::test_feature_engineer_handles_unseen_tokens PASSED [ 52%]
+tests/test_features.py::test_training_pipeline_uses_feature_engineer_step PASSED [ 54%]
+tests/test_inference.py::test_inference_output_shape_and_range PASSED    [ 56%]
+tests/test_inference.py::test_directional_behavior_for_qa_keywords PASSED [ 59%]
+tests/test_inference.py::test_directional_behavior_for_multiple_roles[docker kubernetes terraform aws cloud automation-DevOps Engineer] PASSED [ 61%]
+tests/test_inference.py::test_directional_behavior_for_multiple_roles[react angular frontend typescript css accessibility-Frontend Developer] PASSED [ 63%]
+tests/test_inference.py::test_inference_is_invariant_to_case_and_spacing PASSED [ 65%]
+tests/test_inference.py::test_inference_rejects_empty_input PASSED       [ 68%]
+tests/test_preprocessing.py::test_clean_text_normalizes_case_and_spacing PASSED [ 70%]
+tests/test_preprocessing.py::test_clean_text_rejects_empty_input PASSED  [ 72%]
+tests/test_preprocessing.py::test_clean_text_rejects_non_string_input PASSED [ 75%]
+tests/test_preprocessing.py::test_clean_text_rejects_input_without_usable_characters PASSED [ 77%]
+tests/test_quality_metrics.py::test_data_metrics_measure_completeness_balance_and_length PASSED [ 79%]
+tests/test_quality_metrics.py::test_data_metrics_report_invalid_schema_without_raising PASSED [ 81%]
+tests/test_quality_metrics.py::test_text_length_drift_detects_large_shift PASSED [ 84%]
+tests/test_quality_metrics.py::test_text_length_drift_rejects_empty_batch PASSED [ 86%]
+tests/test_training.py::test_training_creates_model_and_quality_metrics PASSED [ 88%]
+tests/test_training.py::test_model_can_overfit_small_batch PASSED        [ 90%]
+tests/test_training.py::test_training_log_loss_decreases PASSED          [ 93%]
+tests/test_training.py::test_quality_gate_rejects_unusable_model PASSED  [ 95%]
+tests/test_training.py::test_training_is_deterministic PASSED            [ 97%]
+tests/test_training.py::test_model_persistence_roundtrip PASSED          [100%]
+
+============================= 44 passed in 1.05s ==============================

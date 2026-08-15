@@ -1,8 +1,8 @@
-Final code-quality evidence generated on 2026-08-01 after all implementation
-changes.
+Final code-quality evidence generated on 2026-08-15 after feature-engineering
+and QA remediations.
 
 $ black --check .
-All Python source files would be left unchanged.
+All done! 31 files would be left unchanged.
 
 $ isort --check-only .
 PASS - no incorrectly sorted imports.
@@ -11,3 +11,5 @@ $ flake8 .
 PASS - no violations.
 
 Result: all configured formatting and lint gates pass.
+The lint_before.txt baseline is a summarized historical record. This after
+transcript and the live commands above are the reproducible evidence.

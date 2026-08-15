@@ -25,6 +25,19 @@ def test_health_endpoint():
     assert payload["version"] == "2.1.0"
 
 
+def test_health_endpoint_reports_corrupt_model(
+    monkeypatch,
+    tmp_path: Path,
+):
+    corrupt = tmp_path / "corrupt.joblib"
+    corrupt.write_bytes(b"not-a-joblib-model")
+    monkeypatch.setattr(api_module, "MODEL_PATH", corrupt)
+    monkeypatch.setattr(api_module, "_application", None)
+    response = client.get("/health")
+    assert response.status_code == 503
+    assert response.json()["detail"] == "Model artifact is unavailable"
+
+
 def test_health_endpoint_reports_missing_model(
     monkeypatch,
     tmp_path: Path,

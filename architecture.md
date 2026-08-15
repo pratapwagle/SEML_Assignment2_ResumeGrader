@@ -29,9 +29,9 @@ are pure Python modules.
 ## 2. Folder structure
 
 ```text
-submission/
+179/
 ├── architecture.md # This document
-├── README.md # Setup, runbook, submission map
+├── README.md # Setup, runbook, package map
 ├── .gitignore
 ├── requirements.txt
 ├── pyproject.toml # Black / isort / pytest config
@@ -51,6 +51,7 @@ submission/
 │ ├── data.py # Dataset build + schema validation
 │ ├── ingestion.py # TXT / PDF / DOCX extraction
 │ ├── preprocessing.py # Text normalization + input guards
+│ ├── features.py # TF-IDF FeatureEngineer transformer
 │ ├── trainer.py # Train, quality gates, artifact persist
 │ └── predictor.py # Load artifact + inference
 │
@@ -109,7 +110,7 @@ flowchart LR
 
 Evaluator-facing view of **packages, classes, and key functions** for Assignment II
 Objective 1. Edges match runtime/import dependencies verified against the
-`submission/` codebase (solid = primary control/data flow; dotted = config/logging).
+`179/` codebase (solid = primary control/data flow; dotted = config/logging).
 
 Source: [`docs/component_diagram.mmd`](docs/component_diagram.mmd) 
 Rendered asset: [`docs/component_diagram.png`](docs/component_diagram.png) 
@@ -131,6 +132,7 @@ flowchart TB
 
  subgraph ML["ml/ - ML lifecycle"]
  PRE["preprocessing.clean_text"]
+ FE["features.FeatureEngineer"]
  PRED["ModelPredictor"]
  ING["ingestion.extract_resume_text"]
  DATA["data<br/>build_training_data<br/>validate_training_data<br/>DataQualityReport"]
@@ -158,6 +160,7 @@ flowchart TB
  SCORE --> PRED
  SCORE --> PRE
  PRED --> PRE
+ PRED --> FE
  PRED --> ART
  API --> MET
  UI --> MET
@@ -165,6 +168,7 @@ flowchart TB
  TRAIN_CLI --> TRAIN
  TRAIN --> DATA
  TRAIN --> PRE
+ TRAIN --> FE
  TRAIN --> MQ
  TRAIN --> DQ
  TRAIN --> ART
@@ -186,6 +190,7 @@ flowchart TB
 | `AuditRepository` | Persist metadata only (no raw resume text) |
 | `ModelPredictor` | Load joblib artifact; ranked class probabilities |
 | `clean_text` (`ml.preprocessing`) | Typed normalization and input guards |
+| `FeatureEngineer` (`ml.features`) | sklearn TF-IDF transformer; first `build_pipeline()` step |
 | `extract_resume_text` (`ml.ingestion`) | TXT/PDF/DOCX extraction and size/type checks |
 | `ml.data` | Dataset build, schema validation, `DataQualityReport` |
 | `train_model` (`ml.trainer`) | Fit pipeline, quality gates, persist artifact/metrics |
@@ -205,6 +210,7 @@ flowchart BT
  ingestion[ml.ingestion]
  trainer[ml.trainer]
  predictor[ml.predictor]
+ features[ml.features]
 
  model_metrics[quality.model_metrics]
  data_metrics[quality.data_metrics]
@@ -219,7 +225,9 @@ flowchart BT
  train_entry[train.py]
 
  predictor --> preprocessing
+ predictor --> features
  trainer --> preprocessing
+ trainer --> features
  trainer --> data
  trainer --> model_metrics
  trainer --> data_metrics
@@ -260,7 +268,7 @@ flowchart BT
 |--------|----------------|
 | `scoring.py` | Model prediction + keyword explanation + advisory decision note |
 | `audit.py` | Persist metadata only (never raw resume body) |
-| `application.py` | Single submission pipeline for API and UI |
+| `application.py` | Single screening pipeline for API and UI |
 
 ### 4.3 `app` - transport
 
@@ -544,6 +552,13 @@ sequenceDiagram
 - Logs record lengths and outcomes, not full resume bodies.
 - Input validation: type, length, semantic content, file type, 5 MB upload cap.
 - Outputs are **advisory** (`decision_note`); no automated rejection.
+
+### 7.4 Not implemented (required for production)
+
+Authentication and authorization are **not implemented**. This demo binds to
+localhost and relies on input validation plus privacy-aware audit only. A
+production deployment would add identity, role-based access to `/predict` and
+`/metrics`, TLS, and rate limiting.
 
 ---
 

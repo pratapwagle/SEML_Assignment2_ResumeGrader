@@ -47,7 +47,7 @@ def main() -> None:
         uploaded_file = st.file_uploader(
             "Upload resume",
             type=["txt", "pdf", "docx"],
-            help="Maximum upload size enforced by the ingestion module: 5 MB.",
+            help="Max 5 MB (enforced in ml.ingestion and Streamlit).",
         )
         pasted_text = st.text_area("Or paste resume text", height=220)
 
@@ -118,6 +118,7 @@ def main() -> None:
         snapshot = json.loads(METRICS_PATH.read_text(encoding="utf-8"))
         model_quality = snapshot["model_quality"]
         st.sidebar.header("Verified model quality")
+        st.sidebar.caption("Holdout on 12 synthetic rows — workflow evidence.")
         st.sidebar.metric("Accuracy", f"{model_quality['accuracy']:.3f}")
         st.sidebar.metric("Weighted F1", f"{model_quality['weighted_f1']:.3f}")
 

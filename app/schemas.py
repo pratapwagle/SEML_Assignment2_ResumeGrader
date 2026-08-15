@@ -66,6 +66,8 @@ class DataQualityMetrics(BaseModel):
     minority_class_fraction: float = Field(gt=0.0, le=1.0)
     text_length_mean: float = Field(ge=0.0)
     text_length_std: float = Field(ge=0.0)
+    length_drift_detected: bool | None = None
+    mean_length_z_score: float | None = None
 
 
 class QualityGates(BaseModel):
