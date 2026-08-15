@@ -136,6 +136,31 @@ docker compose up -d --build
 
 Compose also uses `restart: unless-stopped`. Stop with `docker compose down`.
 
+### Kubernetes (kind, 3 pods)
+
+Three pods in namespace `resume-screening` on a local [kind](https://kind.sigs.k8s.io/) cluster:
+
+| Pod | Role | Port |
+|-----|------|------|
+| `resume-api` | FastAPI inference | 8000 |
+| `resume-ui` | Streamlit recruiter UI | 8501 |
+| `resume-gateway` | nginx front door | 80 → NodePort 30080 |
+
+```bash
+docker build -t group179-resume-screening:latest .
+kind create cluster --config k8s/kind-cluster.yaml
+kind load docker-image group179-resume-screening:latest --name resume-screening
+kubectl config use-context kind-resume-screening
+kubectl apply -k k8s
+kubectl -n resume-screening get pods
+```
+
+- Recruiter UI: http://127.0.0.1:30080/
+- API docs: http://127.0.0.1:30080/docs
+- API health: http://127.0.0.1:30080/health
+
+Tear down with `kubectl delete -k k8s` and `kind delete cluster --name resume-screening`.
+
 ### Example prediction
 
 ```bash

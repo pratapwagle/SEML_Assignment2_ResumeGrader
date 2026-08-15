@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-api
+  namespace: resume-screening
+  labels:
+    app.kubernetes.io/name: resume-screening
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: group179
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: resume-screening
+      app.kubernetes.io/component: api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: resume-screening
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: group179
+    spec:
+      containers:
+        - name: api
+          image: group179-resume-screening:latest
+          imagePullPolicy: Never
+          args:
+            - uvicorn
+            - app.api:app
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8000"
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 8
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-api
+  namespace: resume-screening
+  labels:
+    app.kubernetes.io/name: resume-screening
+    app.kubernetes.io/component: api
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: resume-screening
+    app.kubernetes.io/component: api
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
