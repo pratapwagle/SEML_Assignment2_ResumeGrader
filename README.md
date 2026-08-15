@@ -116,25 +116,25 @@ python run_api.py
 
 ### Docker
 
-From this `179/` folder:
+From this `179/` folder. A single container now starts **both** the API and the recruiter UI.
 
 ```bash
 docker build -t group179-resume-screening:latest .
-docker run --rm -p 8000:8000 group179-resume-screening:latest
-```
-
-API: http://127.0.0.1:8000/docs
-
-API and recruiter UI together:
-
-```bash
-docker compose up --build
+docker run -d --name 179 --restart unless-stopped -p 8000:8000 -p 8501:8501 group179-resume-screening:latest
 ```
 
 - API: http://127.0.0.1:8000/docs
 - Recruiter UI: http://127.0.0.1:8501
 
-The image default command is FastAPI on `0.0.0.0:8000`. Streamlit is started only via compose (or by overriding the command).
+`--restart unless-stopped` brings both back after a reboot or Docker restart. Publish **both** ports or the UI will be unreachable.
+
+API and recruiter UI as two services (same URLs):
+
+```bash
+docker compose up -d --build
+```
+
+Compose also uses `restart: unless-stopped`. Stop with `docker compose down`.
 
 ### Example prediction
 
